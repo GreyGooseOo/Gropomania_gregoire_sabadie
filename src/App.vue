@@ -1,10 +1,12 @@
 <template>
-<div>
-  <nav>
-    <router-link to="/">Acceuil</router-link> |
-    <router-link to="/signup">Créer un compte</router-link> |
-    <router-link to="/login">Connexion</router-link>
-  </nav>
+<div class="container">
+  <div class="row text-center">
+    <nav>
+      <router-link to="/">Acceuil</router-link> |
+      <router-link to="/signup">Créer un compte</router-link> |
+      <router-link to="/login">Connexion</router-link>
+    </nav>
+  </div>
   <router-view/>
 </div>
 </template>

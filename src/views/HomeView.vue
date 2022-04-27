@@ -1,8 +1,16 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/icon-left-font.svg" class="logo">
-    <h1>Bienvenue sur votre solution de communication interne</h1>
-  </div>
+<div>
+  <div class="row">
+   <div class="col-md-4 mx-auto">
+     <img alt="Vue logo" src="../assets/icon-left-font.svg">
+   </div>
+ </div>
+ <div class="row">
+   <div class="col text-center">
+     <h1>Bienvenue sur votre solution de communication interne</h1>
+   </div>
+ </div>
+</div>
 </template>
 
 <script>
@@ -16,7 +24,4 @@ export default {
 </script>
 
 <style>
-.logo{
-  width: 20%;
-}
 </style>
