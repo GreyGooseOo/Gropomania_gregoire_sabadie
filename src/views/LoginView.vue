@@ -1,10 +1,24 @@
 <template>
-  <div class="about">
-    <h1>Connexion</h1>
-    <label for="name">Nom d'utilisateur</label><br>
-    <input type="text" id="name" name="name" required maxlength="30"><br>
-    <label for="password">Mot de passe</label><br>
-    <input type="text" id="password" name="password" requiredmaxlength="30"><br>
+  <div>
+    <div class="row">
+      <h1 class="mb-5 mt-5 d-flex justify-content-center">Connexion</h1>
+      <div class="col-md-5 mx-auto">
+        <b-input-group class="mb-4">
+        <b-input-group-prepend is-text>
+          Pseudo
+        </b-input-group-prepend>
+        <b-form-input aria-label="pseudo"></b-form-input>
+        </b-input-group>
+        <b-input-group class="mb-4">
+          <b-input-group-prepend is-text>
+            Mot de passe
+          </b-input-group-prepend>
+          <b-form-input type="password" aria-label="mdp" class="position-relative"></b-form-input><br>
+          <i class="fas fa-eye position-absolute top-50 end-0 translate-middle" ></i>
+        </b-input-group>
+        <b-button variant="outline-success" class="d-flex justify-content-center mx-auto">Valider</b-button>
+      </div>
+    </div>
   </div>
 </template>
 
