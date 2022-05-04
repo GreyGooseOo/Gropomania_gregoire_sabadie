@@ -37,7 +37,7 @@
       <b-button variant="outline-success" class="d-flex justify-content-center mx-auto">Valider</b-button>
   </div>
   <div class="col-md-3">
-    <img alt="Vue logo" src="../assets/logo.png" class="ms-2">
+    <img alt="Vue logo" src="../assets/logo.png" class="d-flex justify-content-center mx-auto">
     <b-button variant="outline-primary" class="d-flex justify-content-center mx-auto">Modifier</b-button>
   </div>
   </div>
