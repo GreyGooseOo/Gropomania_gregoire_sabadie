@@ -1,18 +1,19 @@
 //appel des plugins et code pour le bon fonctionnement de l'application 
 const express = require('express');
 const app = express();
-const mongoose = require('mongoose');
-const saucesRoutes = require('./routes/sauces');
-const userRoutes = require('./routes/user');
+const mysql = require('mysql');
+//const saucesRoutes = require('./routes/sauces');
+//const userRoutes = require('./routes/user');
 const path = require('path');
 require('dotenv').config();
 
-//connection avec mongoDB
-mongoose.connect(`mongodb+srv://Piiquante:${process.env.DB_PASSWORD}@greygoosecluster.pvngc.mongodb.net/GreyGooseCluster?retryWrites=true&w=majority`,
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
+//connection avec MYSQL
+const db = mysql.createConnection({host: "localhost:3306", user: "root", password: "MonSQL54", database : "groupamania"});
+
+db.connect(function(err) {
+  if (err) throw "Erreur Connection";
+  console.log("Connecté à la base de données MySQL!");
+});
 
 app.use(express.json());
 
@@ -24,10 +25,10 @@ app.use((req, res, next) => {
 });
 
 //stokage des images téléchargé dans le dossier /images
-app.use('/images', express.static(path.join(__dirname, 'images')));
+//app.use('/images', express.static(path.join(__dirname, 'images')));
 
 //appel des routes pour l'authentification et les produits
-app.use('/api/sauces', saucesRoutes);
+app.use('/api/posts', postsRoutes);
 app.use('/api/auth', userRoutes);
 
 module.exports = app;

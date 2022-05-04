@@ -1,9 +1,9 @@
 //appel du plugin et du code pour le bon fonctionnement du controlleur
-const Sauce = require('../models/sauce');
+const Sauce = require('../models/post');
 const fs = require('fs');
 
 //fonction permettant de créer une sauce
-exports.createSauce = (req, res, next) => {
+exports.createPost = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
   delete sauceObject._id;
   const sauce = new Sauce({
@@ -23,7 +23,7 @@ exports.createSauce = (req, res, next) => {
 };
 
 //fonction permettant d'obtenir les information d'une sauce dans l'API
-exports.getOneSauce = (req, res, next) => {
+exports.getOnePost = (req, res, next) => {
     Sauce.findOne({_id: req.params.id})
     .then((sauce) => {
         res.status(200).json(sauce);
@@ -34,7 +34,7 @@ exports.getOneSauce = (req, res, next) => {
   };
 
 //fonction permettant de modifié une sauce si l'utilisateur est le créateur de la sauce
-exports.modifySauce = (req, res, next) => {
+exports.modifyPost = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
   .then((sauce) => {
     if (!sauce) {
@@ -68,7 +68,7 @@ exports.modifySauce = (req, res, next) => {
   };
 
 //fonction permettant de supprimer une sauce si l'utilisateur est le créateur de la sauce
-exports.deleteSauce = (req, res, next) => {
+exports.deletePost = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
   .then((sauce) => {
     if (!sauce) {
@@ -100,7 +100,7 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 //fonction permettant d'obtenir un tableau contenant les information des différentes sauces de l'API
-exports.getAllSauces = (req, res, next) => {
+exports.getAllPost = (req, res, next) => {
     Sauce.find().then(
       (sauces) => {
         res.status(200).json(sauces);
@@ -115,7 +115,7 @@ exports.getAllSauces = (req, res, next) => {
   };
 
 //fonction permettant la gestion des likes/dislikes d'une sauce
-exports.likeSauce = (req, res, next) =>{
+exports.likePost = (req, res, next) =>{
   Sauce.findOne({_id: req.params.id})
   .then((sauce) => {
     if (!sauce) {
