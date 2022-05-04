@@ -10,8 +10,8 @@
      <h1>Bienvenue sur votre solution de communication interne</h1>
    </div>
    <div class="col-md-12 d-flex justify-content-around mt-5">
-    <b-button variant="outline-primary" class="col-md-3">Créer un compte</b-button>
-    <b-button variant="outline-primary" class="col-md-3">Connexion</b-button>
+    <b-button variant="outline-primary" class="col-md-3"><router-link to="/signup">Créer un compte</router-link></b-button>
+    <b-button variant="outline-primary" class="col-md-3"><router-link to="/login">Connexion</router-link></b-button>
    </div>
  </div>
 </div>

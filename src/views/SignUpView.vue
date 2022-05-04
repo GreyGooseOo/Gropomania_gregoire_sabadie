@@ -34,7 +34,7 @@
         <b-form-input type="password" aria-label="mdp" class="position-relative"></b-form-input><br>
         <i class="fas fa-eye position-absolute top-50 end-0 translate-middle" ></i>
       </b-input-group>
-      <b-button variant="outline-success" class="d-flex justify-content-center mx-auto">Valider</b-button>
+      <b-button variant="outline-success" class="d-flex justify-content-center mx-auto" style="width : 50%">Valider</b-button>
   </div>
   <div class="col-md-3">
     <img alt="Vue logo" src="../assets/logo.png" class="d-flex justify-content-center mx-auto">
