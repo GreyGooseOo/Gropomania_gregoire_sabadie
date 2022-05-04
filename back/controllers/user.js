@@ -1,4 +1,5 @@
 //appel des plugins et code pour le bon fonctionnement du controlleur
+const Bd = require('../bd');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -34,8 +35,9 @@ exports.signup = (req, res, next) => {
 
 //fonction permettant l'identification d'un utilisateur
 exports.login = (req, res, next) => {
-    User.findOne({ email: req.body.email })
-    .then(user => {
+  Bd.query("SELECT  FROM ", function (err, user) {
+    console.log(user);
+    /*.then(user => {
       if (!user) {
         return res.status(401).json({ error: 'Utilisateur non trouvé !' });
       }
@@ -55,6 +57,6 @@ exports.login = (req, res, next) => {
         })
         .catch(error => res.status(500).json({ error }));
     })
-    .catch(error => res.status(500).json({ error }));
-
+    .catch(error => res.status(500).json({ error }));*/
+  });
 };

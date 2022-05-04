@@ -7,14 +7,6 @@ const mysql = require('mysql');
 const path = require('path');
 require('dotenv').config();
 
-//connection avec MYSQL
-const db = mysql.createConnection({host: "localhost:3306", user: "root", password: "MonSQL54", database : "groupamania"});
-
-db.connect(function(err) {
-  if (err) throw "Erreur Connection";
-  console.log("Connecté à la base de données MySQL!");
-});
-
 app.use(express.json());
 
 app.use((req, res, next) => {
