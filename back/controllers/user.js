@@ -1,11 +1,11 @@
 //appel des plugins et code pour le bon fonctionnement du controlleur
 const Bd = require('../bd');
-const User = require('../models/user');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+//const User = require('../models/user');
+//const bcrypt = require('bcrypt');
+//const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-//fonction permettant la création d'un compte
+/*//fonction permettant la création d'un compte
 exports.signup = (req, res, next) => {
   //vérification de la presence d'un email dans la creation du compte
   if(!req.body.email){
@@ -31,11 +31,11 @@ exports.signup = (req, res, next) => {
       .catch(error => res.status(400).json({ error }));
   })
   .catch(error => res.status(500).json({ error }));
-};
+};*/
 
 //fonction permettant l'identification d'un utilisateur
 exports.login = (req, res, next) => {
-  Bd.query("SELECT  FROM ", function (err, user) {
+  Bd.query("INSERT INTO `utilisateurs`( `nom`, `prenom`, `pseudo`, `password`, `email`, `photo_ulr`, `admin`) VALUES ('greg','prout','proutogreg','prout','prout@prout.pet',' ',1);  ", function (err, user) {
     console.log(user);
     /*.then(user => {
       if (!user) {

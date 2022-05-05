@@ -16,7 +16,7 @@
           <b-form-input type="password" aria-label="mdp" class="position-relative" v-model="mdp"></b-form-input><br>
           <i class="fas fa-eye position-absolute top-50 end-0 translate-middle" ></i>
         </b-input-group>
-        <b-button variant="outline-success" class="d-flex justify-content-center mx-auto">Valider</b-button>
+        <b-button variant="outline-success" class="d-flex justify-content-center mx-auto" @click="tryToConnect">Valider</b-button>
       </div>
     </div>
   </div>
@@ -25,15 +25,27 @@
 <script>
 export default {
   data() {
-    login = "",
-    mdp = ""
+    return {
+      login : "gabou",
+      mdp : null
+    }
   },
   methods: {
     tryToConnect() {
+      fetch("http://localhost:3000/api/login")
+      .then (function(res){
+        console.log("pantoufle");
+          if(res.ok){
+              return  res.json();        
+          }
+      })
+      .catch(function(err){
+        alert(err)
+      })
+      }
+    },
+    mounted() {
+      
     }
-  },
-  mounted() {
-    
-  }
 }
 </script>

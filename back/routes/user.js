@@ -4,7 +4,7 @@ const router = express.Router();
 const userCtrl = require('../controllers/user');
 
 //gestion de création/identification de compte
-router.post('/signup', userCtrl.signup);
+//router.post('/signup', userCtrl.signup);
 router.post('/login', userCtrl.login);
 
 module.exports = router;
