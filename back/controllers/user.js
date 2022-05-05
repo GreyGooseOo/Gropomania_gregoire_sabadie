@@ -36,7 +36,8 @@ exports.signup = (req, res, next) => {
 //fonction permettant l'identification d'un utilisateur
 exports.login = (req, res, next) => {
   Bd.query("INSERT INTO `utilisateurs`( `nom`, `prenom`, `pseudo`, `password`, `email`, `photo_ulr`, `admin`) VALUES ('greg','prout','proutogreg','prout','prout@prout.pet',' ',1);  ", function (err, user) {
-    console.log(user);
+    if (err) throw err;
+       console.log(user);
     /*.then(user => {
       if (!user) {
         return res.status(401).json({ error: 'Utilisateur non trouvé !' });

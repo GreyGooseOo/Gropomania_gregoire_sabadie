@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 //const saucesRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
-const path = require('path');
+//const path = require('path');
 require('dotenv').config();
 
 app.use(express.json());
