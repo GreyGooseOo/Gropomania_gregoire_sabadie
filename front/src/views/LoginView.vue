@@ -32,7 +32,10 @@ export default {
   },
   methods: {
     tryToConnect() {
-      fetch("http://localhost:3000/api/login")
+      fetch("http://localhost:3000/api/auth/login", { method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+             }})
       .then (function(res){
         console.log("pantoufle");
           if(res.ok){

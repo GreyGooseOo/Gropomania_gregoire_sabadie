@@ -23,11 +23,15 @@
 
 export default {
     name : 'TopicComponent',
+    props: {
+    msg: String
+    },
     data(){ return{
         titreTopic :"titre",
         textTopic : "blalbalblalblalblala",
         comentaireTopic : ["blabla","blabla2"]}
     },
+
     
 }
 </script>

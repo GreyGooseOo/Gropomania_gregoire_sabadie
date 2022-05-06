@@ -11,7 +11,7 @@
      <img alt="Vue logo" src="../assets/icon-left-font.svg">
    </div>
  </div>
-<TopicComponent/>
+<topic-component msg="test"></topic-component>
 </div>
 </template>
 

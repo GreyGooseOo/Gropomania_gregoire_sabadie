@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 //const saucesRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
+console.log(userRoutes);
 //const path = require('path');
 require('dotenv').config();
 
@@ -15,11 +16,9 @@ app.use((req, res, next) => {
     next();
 });
 
-//stokage des images téléchargé dans le dossier /images
-//app.use('/images', express.static(path.join(__dirname, 'images')));
 
 //appel des routes pour l'authentification et les produits
 //app.use('/api/posts', postsRoutes);
-app.use('/api', userRoutes);
+app.use('/api/auth', userRoutes);
 
 module.exports = app;

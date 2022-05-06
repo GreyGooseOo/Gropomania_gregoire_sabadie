@@ -5,6 +5,7 @@ const userCtrl = require('../controllers/user');
 
 //gestion de création/identification de compte
 //router.post('/signup', userCtrl.signup);
+console.log(userCtrl);
 router.post('/login', userCtrl.login);
 
 module.exports = router;
