@@ -16,6 +16,9 @@
           <b-form-input type="password" aria-label="mdp" class="position-relative" v-model="mdp"></b-form-input><br>
           <i class="fas fa-eye position-absolute top-50 end-0 translate-middle" ></i>
         </b-input-group>
+        <div class="alert alert-danger" role="alert" v-if="erreurLog !== null">
+            {{erreurLog}}
+        </div>
         <b-button variant="outline-success" class="d-flex justify-content-center mx-auto" @click="tryToConnect">Valider</b-button>
       </div>
     </div>
@@ -26,21 +29,34 @@
 export default {
   data() {
     return {
-      login : "gabou",
-      mdp : null
+      login : "",
+      mdp : "",
+      erreurLog : null
+
     }
   },
   methods: {
     tryToConnect() {
+      this.erreurLog = null;
+      let that = this
       fetch("http://localhost:3000/api/auth/login", { method: "POST",
             headers: {
                 'Content-Type': 'application/json'
-             }})
+             },
+             body: JSON.stringify({pseudo: this.login, mdp: this.mdp})
+            })
       .then (function(res){
-        console.log("pantoufle");
-          if(res.ok){
-              return  res.json();        
-          }
+          return  res.json();      
+      })
+      .then (function(value){
+
+        if(value.token.length > 0 ){
+          localStorage.setItem('token', JSON.stringify(value.token));
+          var newUlr = document.location.href.replace('login','dashboard');
+          document.location.href = newUlr;
+        }else{
+          that.erreurLog = value.err;
+        }
       })
       .catch(function(err){
         alert(err)

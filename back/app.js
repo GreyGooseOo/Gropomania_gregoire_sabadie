@@ -3,7 +3,6 @@ const express = require('express');
 const app = express();
 //const saucesRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
-console.log(userRoutes);
 //const path = require('path');
 require('dotenv').config();
 

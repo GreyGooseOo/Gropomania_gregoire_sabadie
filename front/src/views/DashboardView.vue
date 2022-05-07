@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-md-12 d-flex justify-content-around mt-5">
             <b-button variant="outline-primary" class="col-md-3"><router-link to="/signup">Modifier profil</router-link></b-button>
-            <b-button variant="outline-primary" class="col-md-3"><router-link to="/">Deconnexion</router-link></b-button>
+            <b-button variant="outline-primary" class="col-md-3" @click="deconnexion"><router-link to="/">Deconnexion</router-link></b-button>
         </div>
     </div>
   <div class="row">
@@ -22,6 +22,11 @@ export default {
     name : 'DashBoardView',
   components: {
     TopicComponent
+  },
+  methods : {
+    deconnexion(){
+      localStorage.clear();
+    }
   }
 }
 </script>

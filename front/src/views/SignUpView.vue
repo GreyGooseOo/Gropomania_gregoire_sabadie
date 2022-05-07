@@ -1,53 +1,54 @@
 <template>
 <div>
   <div class="row">
-    <h1 class="mb-5 mt-5 d-flex justify-content-center">Créer un compte</h1>
+    <h1 class="mb-5 mt-5 d-flex justify-content-center" v-if="isModifying">Modifer compte</h1>
+    <h1 class="mb-5 mt-5 d-flex justify-content-center" v-else>Créer un compte</h1>
     <div class="col-md-9">
-      <b-input-group class="mb-2">
+      <b-input-group class="mb-4">
         <b-input-group-prepend is-text>
           Nom
         </b-input-group-prepend>
         <b-form-input aria-label="nom" v-model="nom" v-bind:class="{ 'is-invalid': isTryingToSave && (isEmptyNom || isNomCorrect)}"></b-form-input>
       </b-input-group>
-      <p v-if="isTryingToSave && isEmptyNom " class="text-danger"> c'est vide connard !</p>
-      <p v-if="isTryingToSave && isNomCorrect" class="text-danger"> plus long connard !</p>
-      <b-input-group class="mb-2">
+      <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isEmptyNom ">Champ non remplit</div>
+      <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isNomCorrect ">Nom non valide</div>
+      <b-input-group class="mb-4">
         <b-input-group-prepend is-text>
           Prénom
         </b-input-group-prepend>
         <b-form-input aria-label="prénom" v-model="prenom" v-bind:class="{ 'is-invalid': isTryingToSave && (isEmptyPrenom || isPrenomCorrect)}"></b-form-input>
       </b-input-group>
-      <p v-if="isTryingToSave && isEmptyPrenom" class="text-danger"> c'est vide connard !</p>
-      <p v-if="isTryingToSave && isPrenomCorrect" class="text-danger"> plus long connard !</p>
-      <b-input-group class="mb-2">
+      <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isEmptyPrenom ">Champ non remplit</div>
+      <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isPrenomCorrect ">Prénom non valide</div>
+      <b-input-group class="mb-4">
         <b-input-group-prepend is-text>
           Pseudo
         </b-input-group-prepend>
         <b-form-input aria-label="pseudo" v-model="login" v-bind:class="{ 'is-invalid': isTryingToSave && (isEmptyPseudo || isPseudoTooSmall)}"></b-form-input>
       </b-input-group>
-      <p v-if="isTryingToSave && isEmptyPseudo" class="text-danger"> c'est vide connard !</p>
-      <p v-if="isTryingToSave && isPseudoTooSmall" class="text-danger"> plus long connard !</p>
-      <b-input-group class="mb-2">
+      <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isEmptyPseudo ">Champ non remplit</div>
+      <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isPseudoTooSmall ">Pesudo trop court</div>
+      <b-input-group class="mb-4">
         <b-input-group-prepend is-text>
           Mail
         </b-input-group-prepend>
         <b-form-input type="email" aria-label="mail" v-model="mail" v-bind:class="{ 'is-invalid': isTryingToSave && (isEmptyMail || isMailCorrect)}"></b-form-input>
       </b-input-group>
-      <p v-if="isTryingToSave && isEmptyMail" class="text-danger"> c'est vide connard !</p>
-      <p v-if="isTryingToSave && isMailCorrect" class="text-danger"> c'est pas un mail connard !</p>
-      <b-input-group class="mb-2">
+      <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isEmptyMail ">Champ non remplit</div>
+      <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isMailCorrect ">E-mail incorrect</div>
+      <b-input-group class="mb-4">
         <b-input-group-prepend is-text>
           Mot de passe
         </b-input-group-prepend>
         <b-form-input type="password" aria-label="mdp" class="position-relative" v-model="mdp" v-bind:class="{ 'is-invalid': isTryingToSave && (isEmptyMdp || isMdpCorrect)}"></b-form-input><br>
         <i class="fas fa-eye position-absolute top-50 end-0 translate-middle" ></i>
       </b-input-group>
-      <p v-if="isTryingToSave && isEmptyMdp" class="text-danger"> c'est vide connard !</p>
-      <p v-if="isTryingToSave && isMdpCorrect" class="text-danger"> doit contenir au moin une maj et 1 chiffre</p>
+      <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isEmptyMdp ">Champ non remplit</div>
+      <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isMdpCorrect ">Le mot de passe doit contenir 10 charactère avec au moins 1 majuscule et 1 chiffre</div>
       <b-button variant="outline-success" class="d-flex justify-content-center mx-auto" style="width : 50%" @click="tryToSave()">Valider</b-button>
   </div>
-  <div class="col-md-3">
-    <img alt="Vue logo" :src= "url_photo" class="d-flex justify-content-center mx-auto">
+ <div class="col-md-3">
+    <img alt="Vue logo" :src= "test" class="d-flex justify-content-center mx-auto">
     <b-button variant="outline-primary" class="d-flex justify-content-center mx-auto">Modifier</b-button>
   </div>
   </div>
@@ -56,20 +57,23 @@
 </template>
 
 <script>
-const imageLink = require('../assets/logo.png');
 export default {
   data() {
     return {
       nom : "",
       prenom : "",
-      login : "gabou",
+      login : "",
       mail : "",
       mdp : "",
-      url_photo : imageLink,
-      isTryingToSave : false
+      url_photo : "../assets/logo.png",
+      isTryingToSave : false,
+      isModifying : false
     }
   },
   computed: {
+    test(){
+      return require("../assets/logo.png");
+    },
     isEmptyNom(){
       return this.nom.trim() === "" || this.nom === null;
     },
@@ -108,25 +112,57 @@ export default {
     tryToSave(){
       this.isTryingToSave = true
       if(this.isFullOk){
+        var recupToken = localStorage.getItem('token')
+        var that = this
         console.log("sauvegarde effectué");
+        fetch("http://localhost:3000/api/auth/signup", { method: "POST",headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({nom : this.nom, prenom : this.prenom, pseudo: this.login,email : this.mail, mdp: this.mdp, photo_url : this.url_photo, token : recupToken})
+            })
+          .then (function(res){
+            if(res.ok && !that.isModifying){
+              var newUlr = document.location.href.replace('signup','login');
+              document.location.href = newUlr;
+            }
+            return res.json();
+          })
+          .then(function(value){
+            alert(value.message);
+          })
+          .catch(function(err){
+            alert(err)
+          })
       }
-    },
-    tryToConnect() {
-      fetch("http://localhost:3000/api/login")
-      .then (function(res){
-        console.log("pantoufle");
-          if(res.ok){
-              return  res.json();        
-          }
-      })
-      .catch(function(err){
-        alert(err)
-      })
-      }
-    },
-    mounted() {
-      
     }
+  },
+  mounted: function() {
+    var recupToken = localStorage.getItem('token')
+    if (recupToken){
+      var that = this;
+      var token = JSON.parse(recupToken);
+      fetch("http://localhost:3000/api/auth/getsignup", { method: "POST",
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({token: token})
+              })
+        .then (function(res){
+            return  res.json();      
+        })
+        .then (function(value){
+          if(value.profil!== null){
+            that.isModifying = true;
+            that.nom = value.profil.nom;
+            that.prenom = value.profil.prenom;
+            that.login = value.profil.pseudo;
+            that.mail = value.profil.email;
+            that.url_photo = value.profil.photo_url;
+          }
+        })
+        .catch(function(err){
+          alert(err)
+        })
+      }
+  }
 
 }
 </script>
