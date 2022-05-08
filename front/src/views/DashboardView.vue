@@ -8,10 +8,10 @@
     </div>
   <div class="row">
    <div class="col-md-4 mx-auto">
-     <img alt="Vue logo" src="../assets/icon-left-font.svg">
+     <img alt="groupomania logo" src="../assets/icon-left-font.svg">
    </div>
  </div>
-<topic-component msg="test"></topic-component>
+<topic-component></topic-component>
 </div>
 </template>
 

@@ -41,15 +41,15 @@
         <b-input-group-prepend is-text>
           Mot de passe
         </b-input-group-prepend>
-        <b-form-input type="password" aria-label="mdp" class="position-relative" v-model="mdp" v-bind:class="{ 'is-invalid': isTryingToSave && (isEmptyMdp || isMdpCorrect)}"></b-form-input><br>
-        <i class="fas fa-eye position-absolute top-50 end-0 translate-middle" ></i>
+        <b-form-input :type="typePassword" aria-label="mdp" class="position-relative" v-model="mdp" v-bind:class="{ 'is-invalid': isTryingToSave && (isEmptyMdp || isMdpCorrect)}"></b-form-input><br>
+        <i class="fas fa-eye position-absolute top-50 end-0 translate-middle" @click="afficherMdp()"></i>
       </b-input-group>
       <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isEmptyMdp ">Champ non remplit</div>
       <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isMdpCorrect ">Le mot de passe doit contenir 10 charactère avec au moins 1 majuscule et 1 chiffre</div>
       <b-button variant="outline-success" class="d-flex justify-content-center mx-auto" style="width : 50%" @click="tryToSave()">Valider</b-button>
   </div>
  <div class="col-md-3">
-    <img alt="Vue logo" :src= "test" class="d-flex justify-content-center mx-auto" style="width : 200px; height : 200px; object-fit: cover;">
+    <img alt="photo profil" :src="test"  class="d-flex justify-content-center mx-auto mb-4" style="width : 200px; height : 200px; object-fit: cover;">
     <b-button variant="outline-primary" class="d-flex justify-content-center mx-auto">Modifier</b-button>
   </div>
   </div>
@@ -66,15 +66,16 @@ export default {
       login : "",
       mail : "",
       mdp : "",
-      url_photo : "logo.png",
+      url_photo : "icon.svg",
       isTryingToSave : false,
-      isModifying : false
+      isModifying : false,
+      typePassword : "password"
     }
   },
   computed: {
     test(){
-      var photo = this.url_photo
-      return require('../assets/photo_profil/' + photo);
+      console.log(require('../assets/photo_profil/' + this.url_photo))
+      return require('../assets/photo_profil/'+ this.url_photo);
     },
     isEmptyNom(){
       return this.nom.trim() === "" || this.nom === null;
@@ -111,6 +112,14 @@ export default {
     }
   },
   methods: {
+    afficherMdp(){
+      if(this.typePassword === "password"){
+        this.typePassword = "text";
+      }else{
+        this.typePassword = "password";
+      }
+      
+    },
     retourDashboard(){
       var retour = "";
       if(this.isModifying){
