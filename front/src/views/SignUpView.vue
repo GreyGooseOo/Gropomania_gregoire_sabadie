@@ -1,7 +1,8 @@
 <template>
 <div>
   <div class="row">
-    <h1 class="mb-5 mt-5 d-flex justify-content-center" v-if="isModifying">Modifer compte</h1>
+    <b-button variant="outline-primary" class="col-md-1 d-flex justify-content-center" @click="retourDashboard()">Retour</b-button>
+    <h1 class="mb-5 mt-5 d-flex justify-content-center" v-if="isModifying">Modifer profil</h1>
     <h1 class="mb-5 mt-5 d-flex justify-content-center" v-else>Créer un compte</h1>
     <div class="col-md-9">
       <b-input-group class="mb-4">
@@ -48,7 +49,7 @@
       <b-button variant="outline-success" class="d-flex justify-content-center mx-auto" style="width : 50%" @click="tryToSave()">Valider</b-button>
   </div>
  <div class="col-md-3">
-    <img alt="Vue logo" :src= "test" class="d-flex justify-content-center mx-auto">
+    <img alt="Vue logo" :src= "test" class="d-flex justify-content-center mx-auto" style="width : 200px; height : 200px; object-fit: cover;">
     <b-button variant="outline-primary" class="d-flex justify-content-center mx-auto">Modifier</b-button>
   </div>
   </div>
@@ -65,14 +66,15 @@ export default {
       login : "",
       mail : "",
       mdp : "",
-      url_photo : "../assets/logo.png",
+      url_photo : "logo.png",
       isTryingToSave : false,
       isModifying : false
     }
   },
   computed: {
     test(){
-      return require("../assets/logo.png");
+      var photo = this.url_photo
+      return require('../assets/photo_profil/' + photo);
     },
     isEmptyNom(){
       return this.nom.trim() === "" || this.nom === null;
@@ -109,12 +111,19 @@ export default {
     }
   },
   methods: {
+    retourDashboard(){
+      var retour = "";
+      if(this.isModifying){
+        retour = 'dashboard'
+      }
+      var newUlr = document.location.href.replace('signup',retour);
+      document.location.href = newUlr;
+    },
     tryToSave(){
       this.isTryingToSave = true
       if(this.isFullOk){
-        var recupToken = localStorage.getItem('token')
+        var recupToken = JSON.parse(localStorage.getItem('token'));
         var that = this
-        console.log("sauvegarde effectué");
         fetch("http://localhost:3000/api/auth/signup", { method: "POST",headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({nom : this.nom, prenom : this.prenom, pseudo: this.login,email : this.mail, mdp: this.mdp, photo_url : this.url_photo, token : recupToken})
             })

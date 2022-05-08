@@ -38,7 +38,6 @@ exports.signup = (req, res, next) => {
     return res.status(400).json({ error : 'Paramètre manquant'});
   };
   //haschage du mot de passe dans la base de donnée
-  console.log(1)
   bcrypt.hash(req.body.mdp, 10)
   .then(hash => {
     const user = {
@@ -50,18 +49,13 @@ exports.signup = (req, res, next) => {
       photo_url : req.body.photo_url
     };
     if(req.body.token && req.body.token.length > 0 ){
-      console.log(2);
-        var verifyToken = jwt.verify(req.body.token, process.env.TOKEN_JWT);
-        var _id = verifyToken.id;
-        console.log(_id)
-        console.log(4)
-      baseDeDonnees.query("UPDATE `utilisateurs` SET `nom`=?,`prenom`=?,`pseudo`=?,`password`=?,`email`=?,`photo_url`=? WHERE 'id' = ?"
-      ,[user.nom,user.prenom,user.pseudo,user.password,user.email,user.photo_url,_id], function (err, user) {
-        console.log(3)
+        var decodeToken = jwt.verify(req.body.token, process.env.TOKEN_JWT);
+        var id = decodeToken.id;
+      baseDeDonnees.query("UPDATE `utilisateurs` SET `nom`=?,`prenom`=?,`pseudo`=?,`password`=?,`email`=?,`photo_url`=? WHERE `id` = ?"
+      ,[user.nom,user.prenom,user.pseudo,user.password,user.email,user.photo_url,id], function (err, user) {
         if(err){
           if (err.errno == 1062){
             var cibleErreur = err.sqlMessage.split('utilisateurs.')[1].split(`'`)[0]
-            console.log(cibleErreur);
             res.status(401).json({ message: `${cibleErreur} déjà existant !` })
           }else{
             throw err
@@ -73,13 +67,11 @@ exports.signup = (req, res, next) => {
       });
       
     }else{
-      baseDeDonnees.query("INSERT INTO `utilisateurs`(`nom`, `prenom`, `pseudo`, `password`, `email`, `photo_url`) VALUES (?,?,?,?,?,?)"
-      ,[user.nom,user.prenom,user.pseudo,user.password,user.email,user.photo_url], function (err, user) {
-        console.log(5)
+      baseDeDonnees.query("INSERT INTO `utilisateurs`(`nom`, `prenom`, `pseudo`, `password`, `email`, `photo_url`) VALUES (?,?,?,?,?,?)",
+      [user.nom,user.prenom,user.pseudo,user.password,user.email,user.photo_url], function (err, user) {
         if(err){
           if (err.errno == 1062){
             var cibleErreur = err.sqlMessage.split('utilisateurs.')[1].split(`'`)[0]
-            console.log(cibleErreur);
             res.status(401).json({ message: `${cibleErreur} déjà existant !` })
           }else{
             throw err
@@ -89,7 +81,7 @@ exports.signup = (req, res, next) => {
           res.status(201).json({ message: 'Utilisateur créé !' })
         }
       });
-    }console.log(6)
+    }
 })
   .catch(error => res.status(500).json({ error }));
 };
@@ -106,12 +98,12 @@ exports.login = (req, res, next) => {
           if (!valid) {
             return res.status(401).json({ err: 'Mot de passe incorrect !',token: "" });
           }
+          res.status(200).json({
+          //création du token d'authentification
+            err : "",
+            token: jwt.sign({ id: user[0].id}, process.env.TOKEN_JWT, { expiresIn: '24h' })
+            })
         });
-    res.status(200).json({
-      //création du token d'authentification
-      err : "",
-      token: jwt.sign({ id: user[0].id}, process.env.TOKEN_JWT, { expiresIn: '24h' })
-      })
+    
   });
-
 };

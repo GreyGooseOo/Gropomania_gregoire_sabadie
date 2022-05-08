@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="row">
+      <b-button variant="outline-primary" class="col-md-1 mx-auto" @click="retourHome">Retour</b-button>
       <h1 class="mb-5 mt-5 d-flex justify-content-center">Connexion</h1>
       <div class="col-md-5 mx-auto">
         <b-input-group class="mb-4">
@@ -19,7 +20,8 @@
         <div class="alert alert-danger" role="alert" v-if="erreurLog !== null">
             {{erreurLog}}
         </div>
-        <b-button variant="outline-success" class="d-flex justify-content-center mx-auto" @click="tryToConnect">Valider</b-button>
+        <b-button variant="outline-success" class="d-flex justify-content-center mx-auto mb-4" @click="tryToConnect">Valider</b-button>
+        <b-button variant="outline-primary" class="d-flex justify-content-center mx-auto" @click="goToSignup">Créer un compte</b-button>
       </div>
     </div>
   </div>
@@ -36,6 +38,14 @@ export default {
     }
   },
   methods: {
+    goToSignup(){
+      var newUlr = document.location.href.replace('login','signup');
+      document.location.href = newUlr;
+    },
+    retourHome(){
+      var newUlr = document.location.href.replace('login','');
+      document.location.href = newUlr;
+    },
     tryToConnect() {
       this.erreurLog = null;
       let that = this
