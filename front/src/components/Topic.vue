@@ -19,17 +19,17 @@
                 <h4 class="ms-3" style="max-width : 50%; overflow: hidden;">{{ topic.titre }}</h4>
                 <p class="ms-5 mt-2"> {{ topic.date_creation.split("T")[0].split('-').join('/') }}</p>
                 <div v-if="true">
-                    <b-button v-b-modal.modal-modif- class="ms-5">Modifier</b-button><!-- Es ce qu'on peu faire du dynamique ?-->
-                    <b-modal :id="'modal-modif-' + topic.topicId" title="Modification de l'article" @ok="modifArticle">
+                    <b-button v-b-modal="'modal-modif-'+ topic.topicId" :id="'btn-modal-modif-'+ topic.topicId" class="ms-5">Modifier</b-button>
+                    <b-modal :id="'modal-modif-' + topic.topicId" :title="'Modification de l article ' + topic.topicId" @ok="modifArticle">
                         <b-input-group class="mb-4">
-                            <b-form-input aria-label="titre" v-model="modifTitreArticle" placeholder="Titre de l'article"></b-form-input>
+                            <b-form-input aria-label="titre" :id="'titre-modal-modif-' + topic.topicId" v-model="modifTitreArticle" placeholder="Titre de l'article"></b-form-input>
                         </b-input-group>
-                        <b-form-textarea id="textarea" class="mb-4" v-model="modifTextArticle" placeholder="Text de l'article ..." rows="3" max-rows="6"></b-form-textarea>
+                        <b-form-textarea :id="'textarea-modal-modif-' + topic.topicId" class="mb-4" v-model="modifTextArticle" placeholder="Text de l'article ..." rows="3" max-rows="6"></b-form-textarea>
                     </b-modal>
                 </div>
-                <div v-if="true"><!-- modif v-if-->
-                    <b-button v-b-modal.modal-suppr class="ms-3" variant="danger">Supprimmer</b-button>
-                    <b-modal :id="'modal-suppr-' + topic.topicId" title="suppression de l'article" @ok="supprArticle"><!-- modif id-->
+                <div v-if="true">
+                    <b-button v-b-modal="'modal-suppr-'+ topic.topicId"  :id="'btn-modal-suppr-'+ topic.topicId" class="ms-3" variant="danger">Supprimmer</b-button>
+                    <b-modal :id="'modal-suppr-' + topic.topicId" :title="'suppression de l article ' + topic.topicId" @ok="supprArticle()">
                         <p class="my-4">Voulez-vous vraiment supprimer cet article</p>
                     </b-modal>
                 </div>
@@ -65,12 +65,13 @@ export default {
     props: ['topic'],
     data(){ return{
         texteCreationCommentaire:"",
-        modifTitreArticle: "",
-        modifTextArticle: "",
+        modifTitreArticle: this.topic.titre,
+        modifTextArticle: this.topic.article,
         }
     },
     methods : {
         modifArticle(){
+        var that = this;
         var recupToken = JSON.parse(localStorage.getItem('token'));
         fetch("http://localhost:3000/api/posts", { method: "PUT",headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({postId : this.topic.topicId ,utilisateur_id: this.topic.utilisateur_id, titre : this.modifTitreArticle, text: this.modifTextArticle, token : recupToken})
@@ -81,6 +82,8 @@ export default {
                 }
             })
             .then(function(value){
+                that.topic.titre = that.modifTitreArticle;
+                that.topic.article = that.modifTextArticle;
                 alert(value.message);
             })
             .catch(function(err){
@@ -88,6 +91,7 @@ export default {
             })
         },
         supprArticle(){
+            var that = this;
         var recupToken = JSON.parse(localStorage.getItem('token'));
         fetch("http://localhost:3000/api/posts/" + this.topic.topicId, { method: "DELETE",headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({postId : this.topic.topicId ,utilisateur_id: this.topic.utilisateur_id, token : recupToken})
@@ -98,16 +102,13 @@ export default {
                 } 
             })
             .then(function(value){
-                alert(value.message);
+                that.$emit('article-suppr', that.topic.topicId,value.message);
             })
             .catch(function(err){
                 alert(err)
             })
         },
         creationCommentaire(){
-            console.log(this.topic.topicId)
-            console.log(this.topic_id)
-
             var recupToken = JSON.parse(localStorage.getItem('token'));
             fetch("http://localhost:3000/api/comments", { method: "POST",headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({commentaire : this.texteCreationCommentaire, postId : this.topic.topicId, token : recupToken})
@@ -158,8 +159,37 @@ export default {
                 alert(err)
             })
         },
+        recupererCommentaire(){
+            var that = this
+            var recupToken = JSON.parse(localStorage.getItem('token'));
+            fetch("http://localhost:3000/api/posts/getcomments" , { method: "POST",headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({token : recupToken})
+            })
+            .then (function(res){
+                if(res.ok){
+                    return  res.json();        
+                }
+            })
+            .then (function(commentaires){
+                that.tableauCommentaire = commentaires;
+            })
+            .catch(function(err){
+            alert(err)
+            })
+        },
 
-    }  
+    },
+    mounted: function() {
+   // this.recupererCommentaire();
+    },
+    watch : {
+        'topic.titre'(){
+            this.modifTitreArticle = this.topic.titre;
+        },
+        'topic.article'(){
+            this.modifTextArticle = this.topic.article;
+        }
+    }
 }
 </script>
 

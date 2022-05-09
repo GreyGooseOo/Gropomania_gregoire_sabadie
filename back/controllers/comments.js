@@ -1,11 +1,9 @@
 //appel du plugin et du code pour le bon fonctionnement du controlleur
-//const Sauce = require('../models/post');
 const mysql = require('mysql');
-//const fs = require('fs');
 
 const baseDeDonnees = mysql.createConnection({host: process.env.MYSQL_HOST, user: process.env.MYSQL_USER, password: process.env.MYSQL_PASSWORD, database : "groupamania"});
 
-//fonction permettant de créer une sauce
+//fonction permettant de créer un commentaire
 exports.createComment = (req, res, next) => {
     console.log(req.body.postId)
   baseDeDonnees.query("INSERT INTO `commentaires`(`commentaire`, `utilisateur_id`, `topic_id`, `date_creation`) VALUES (?,?,?,NOW())",
@@ -23,7 +21,7 @@ exports.getAllComments = (req, res, next) => {
   })
 };
 
-//fonction permettant de modifié une sauce si l'utilisateur est le créateur de la sauce
+//fonction permettant de modifié uncommentaire si l'utilisateur est le créateur du commentaire
 exports.modifyComment = (req, res, next) => {
   if(admin){
 //gestion admin

@@ -38,6 +38,14 @@ export default {
     }
   },
   methods: {
+     afficherMdp(){
+      if(this.typePassword === "password"){
+        this.typePassword = "text";
+      }else{
+        this.typePassword = "password";
+      }
+      
+    },
     goToSignup(){
       var newUlr = document.location.href.replace('login','signup');
       document.location.href = newUlr;

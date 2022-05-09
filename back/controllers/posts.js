@@ -1,10 +1,9 @@
 //appel du plugin et du code pour le bon fonctionnement du controlleur
-//const Sauce = require('../models/post');
 const mysql = require('mysql');
-//const fs = require('fs');
 
 const baseDeDonnees = mysql.createConnection({host: process.env.MYSQL_HOST, user: process.env.MYSQL_USER, password: process.env.MYSQL_PASSWORD, database : "groupamania"});
 
+var admin = false;
 //fonction permettant de créer une sauce
 exports.createPost = (req, res, next) => {
   baseDeDonnees.query("INSERT INTO `topics`(`titre`, `article`, `utilisateur_id`, `date_creation`, `date_dernier_com`) VALUES (?,?,?,NOW(),NOW())",
@@ -16,7 +15,7 @@ exports.createPost = (req, res, next) => {
 
 //fonction permettant d'obtenir un tableau contenant les information des différentes sauces de l'API
 exports.getAllPosts = (req, res, next) => {
-  baseDeDonnees.query("SELECT `topics`.`id` AS topicsId, `titre`, `article`, `utilisateur_id`, `date_creation`, `date_dernier_com`, `admin_utilisateur_id`, `date_modif_admin`,`pseudo`,`photo_url` FROM `topics` INNER JOIN `utilisateurs` ON `utilisateurs`.`id`= `topics`.`utilisateur_id` ORDER BY `date_dernier_com` DESC",
+  baseDeDonnees.query("SELECT `topics`.`id` AS topicId, `titre`, `article`, `utilisateur_id`, `date_creation`, `date_dernier_com`, `admin_utilisateur_id`, `date_modif_admin`,`pseudo`,`photo_url` FROM `topics` INNER JOIN `utilisateurs` ON `utilisateurs`.`id`= `topics`.`utilisateur_id` ORDER BY `date_dernier_com` DESC",
   function (err, topics) {
     if(err) throw err;
     res.status(200).json(topics);
@@ -29,7 +28,7 @@ exports.modifyPost = (req, res, next) => {
 //gestion admin
   }else{
     if(req.auth.userId !== req.body.utilisateur_id){
-      res.status(403).json({error: new Error('Unauthorized request!')});
+      res.status(403).json({message: 'Utilisateur non autorisé' });
     }else{
       baseDeDonnees.query("UPDATE `topics` SET `titre`= ?,`article`=?,`date_creation`= NOW() WHERE `id` = ?"
       ,[req.body.titre, req.body.text, req.body.postId], function (err, topics) {
@@ -45,7 +44,7 @@ exports.deletePost = (req, res, next) => {
 //gestion admin
   }else{
     if(req.auth.userId !== req.body.utilisateur_id){
-      res.status(403).json({error: new Error('Unauthorized request!')});
+      res.status(403).json({message: 'Utilisateur non autorisé' });
     }else{
       baseDeDonnees.query("DELETE FROM `topics` WHERE `id`=?"
       ,[req.body.postId], function (err, topics) {

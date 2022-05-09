@@ -20,7 +20,7 @@
      <img alt="groupomania logo" src="../assets/icon-left-font.svg">
    </div>
  </div>
-<topic-component v-for="(topic,topicIndex) in tableauTopics" :key="topic.id" v-model="tableauTopics[topicIndex]" class="mb-5"></topic-component>
+<topic-component v-for="(topic,topicIndex) in tableauTopics" :key="topic.id" v-model="tableauTopics[topicIndex]" @article-suppr="supprArticle" class="mb-5"></topic-component>
 </div>
 </template>
 
@@ -44,6 +44,7 @@ export default {
       localStorage.clear();
     },
     creationArticle(){
+      var that = this; 
       var recupToken = JSON.parse(localStorage.getItem('token'));
       fetch("http://localhost:3000/api/posts", { method: "POST",headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({titre : this.titreNouvelArticle, text: this.textNouvelArticle, token : recupToken})
@@ -55,6 +56,10 @@ export default {
       })
       .then(function(value){
         alert(value.message);
+        that.recupererArticles();
+        that.titreNouvelArticle = "";
+        that.textNouvelArticle = "";
+
       })
       .catch(function(err){
         alert(err)
@@ -67,18 +72,38 @@ export default {
       body: JSON.stringify({token : recupToken})
       })
       .then (function(res){
-          if(res.ok){
-              return  res.json();        
-          }
+        if(res.ok){
+            return  res.json();        
+        }
       })
       .then (function(topics){
-          that.tableauTopics = topics;
+        that.tableauTopics = topics;
       })
       .catch(function(err){
       alert(err)
       })
-      }
     },
+    supprArticle(articleId,message){
+      var index = this.tableauTopics.findIndex(t => t.topicId == articleId);
+      this.tableauTopics.splice(index,1);
+      this.$bvToast.toast(`${message}`, {
+          title: `Suppression`,
+          toaster: 'b-toaster-top-right',
+          solid: true,
+          appendToast: false,
+          variant : 'Danger',
+          noAutoHide : false
+
+        });
+      /*  this.$bvToast.toast(`${message} 8`, {
+          toaster: 'b-toaster-top-right',
+          solid: false,
+          appendToast: false,
+          variant : 'Success'
+        })*/
+
+    }
+  },
 
   mounted: function() {
     this.recupererArticles();
