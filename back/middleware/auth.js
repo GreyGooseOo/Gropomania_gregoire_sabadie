@@ -5,9 +5,9 @@ require('dotenv').config();
 //vérifacation du token pour validation de l'authentification
 module.exports = (req, res, next) => {
   try {
-    const token = req.headers.authorization.split(' ')[1];
+    const token = req.body.token;
     const decodedToken = jwt.verify(token, process.env.TOKEN_JWT);
-    const userId = decodedToken.userId;
+    const userId = decodedToken.id;
     req.auth = { userId };
     if (req.body.userId && req.body.userId !== userId) {
       throw res.status(403).json({ error: 'unauthorized request' });

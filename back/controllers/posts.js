@@ -1,27 +1,61 @@
 //appel du plugin et du code pour le bon fonctionnement du controlleur
-const Sauce = require('../models/post');
-const fs = require('fs');
+//const Sauce = require('../models/post');
+const mysql = require('mysql');
+//const fs = require('fs');
+
+const baseDeDonnees = mysql.createConnection({host: process.env.MYSQL_HOST, user: process.env.MYSQL_USER, password: process.env.MYSQL_PASSWORD, database : "groupamania"});
 
 //fonction permettant de créer une sauce
 exports.createPost = (req, res, next) => {
-  const sauceObject = JSON.parse(req.body.sauce);
-  delete sauceObject._id;
-  const sauce = new Sauce({
-    ...sauceObject,
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-    likes: 0,
-    dislikes: 0,
-    userLiked: [],
-    userDisliked: []
-  });
-  sauce.save().then(() => {
-      res.status(201).json({message: 'Post saved successfully!'});
+  baseDeDonnees.query("INSERT INTO `topics`(`titre`, `article`, `utilisateur_id`, `date_creation`, `date_dernier_com`) VALUES (?,?,?,NOW(),NOW())",
+  [req.body.titre, req.body.text, req.auth.userId], function (err, user) {
+    if(err) throw err;
+    res.status(201).json({ message: 'Article crée !' })
     })
-    .catch((error) => {
-    res.status(400).json({error: error});
-    });
+}
+
+//fonction permettant d'obtenir un tableau contenant les information des différentes sauces de l'API
+exports.getAllPosts = (req, res, next) => {
+  baseDeDonnees.query("SELECT `topics`.`id` AS topicsId, `titre`, `article`, `utilisateur_id`, `date_creation`, `date_dernier_com`, `admin_utilisateur_id`, `date_modif_admin`,`pseudo`,`photo_url` FROM `topics` INNER JOIN `utilisateurs` ON `utilisateurs`.`id`= `topics`.`utilisateur_id` ORDER BY `date_dernier_com` DESC",
+  function (err, topics) {
+    if(err) throw err;
+    res.status(200).json(topics);
+  })
 };
 
+//fonction permettant de modifié une sauce si l'utilisateur est le créateur de la sauce
+exports.modifyPost = (req, res, next) => {
+  if(admin){
+//gestion admin
+  }else{
+    if(req.auth.userId !== req.body.utilisateur_id){
+      res.status(403).json({error: new Error('Unauthorized request!')});
+    }else{
+      baseDeDonnees.query("UPDATE `topics` SET `titre`= ?,`article`=?,`date_creation`= NOW() WHERE `id` = ?"
+      ,[req.body.titre, req.body.text, req.body.postId], function (err, topics) {
+      if(err) throw err;
+      res.status(200).json({ message: 'Article modifié !' });
+      })
+    }  
+  }  
+};
+//fonction permettant de supprimer une sauce si l'utilisateur est le créateur de la sauce
+exports.deletePost = (req, res, next) => {
+  if(admin){
+//gestion admin
+  }else{
+    if(req.auth.userId !== req.body.utilisateur_id){
+      res.status(403).json({error: new Error('Unauthorized request!')});
+    }else{
+      baseDeDonnees.query("DELETE FROM `topics` WHERE `id`=?"
+      ,[req.body.postId], function (err, topics) {
+      if(err) throw err;
+      res.status(200).json({ message: 'Article supprimé !' });
+      })
+    }  
+  }
+};
+/*
 //fonction permettant d'obtenir les information d'une sauce dans l'API
 exports.getOnePost = (req, res, next) => {
     Sauce.findOne({_id: req.params.id})
@@ -31,87 +65,6 @@ exports.getOnePost = (req, res, next) => {
     .catch((error) => {
       res.status(404).json({ error: error });
     });
-  };
-
-//fonction permettant de modifié une sauce si l'utilisateur est le créateur de la sauce
-exports.modifyPost = (req, res, next) => {
-  Sauce.findOne({ _id: req.params.id })
-  .then((sauce) => {
-    if (!sauce) {
-      res.status(404).json({error: new Error('No such sauce!')});
-    }
-    //vérification du bon utilisateur
-    if (sauce.userId !== req.auth.userId) {
-      res.status(403).json({error: new Error('Unauthorized request!')});
-    }
-    const sauceObject = req.file ?
-    {
-      ...JSON.parse(req.body.sauce),
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body};
-    //suppression de l'ancienne image dans le dossier "images" si changement de photo
-    if(sauce.imageUrl!==sauceObject.imageUrl){
-      const filename = sauce.imageUrl.split('/images/')[1];
-      fs.unlinkSync(`images/${filename}`);
-    }
-    Sauce.updateOne({_id: req.params.id},  { ...sauceObject, _id: req.params.id })
-    .then(() => {
-        res.status(201).json({message: 'Sauce updated successfully!'});
-      })
-      .catch((error) => {
-        res.status(400).json({error: error});
-      });
-    })
-    .catch(error => {
-      res.status(500).json({ error })
-    });
-  };
-
-//fonction permettant de supprimer une sauce si l'utilisateur est le créateur de la sauce
-exports.deletePost = (req, res, next) => {
-  Sauce.findOne({ _id: req.params.id })
-  .then((sauce) => {
-    if (!sauce) {
-      res.status(404).json({error: new Error('No such sauce!')});
-    }
-    //vérification du bon utilisateur
-    if (sauce.userId !== req.auth.userId) {
-      res.status(403).json({error: new Error('Unauthorized request!')});
-    }
-    Sauce.findOne({ _id: req.params.id })
-    .then(sauce => {
-      //suppression de l'image du dossier "images"
-      const filename = sauce.imageUrl.split('/images/')[1];
-      fs.unlink(`images/${filename}`, () => {
-        Sauce.deleteOne({ _id: req.params.id })
-          .then(() => res.status(200).json({ message: 'Sauce supprimée !'}))
-          .catch(error => {
-            res.status(400).json({ error })
-          });
-      });
-    })
-    .catch(error => {
-      res.status(500).json({ error })
-    });
-  })
-    .catch(error => {
-      res.status(500).json({ error })
-  });
-};
-
-//fonction permettant d'obtenir un tableau contenant les information des différentes sauces de l'API
-exports.getAllPost = (req, res, next) => {
-    Sauce.find().then(
-      (sauces) => {
-        res.status(200).json(sauces);
-      }
-    ).catch(
-      (error) => {
-        res.status(400).json({
-          error: error
-        });
-      }
-    );
   };
 
 //fonction permettant la gestion des likes/dislikes d'une sauce
@@ -153,4 +106,4 @@ exports.likePost = (req, res, next) =>{
   .catch((error) => {
     res.status(400).json({ error: error });
   });
-};
+};*/

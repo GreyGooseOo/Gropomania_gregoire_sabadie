@@ -1,9 +1,9 @@
 //appel des plugins et code pour le bon fonctionnement de l'application 
 const express = require('express');
 const app = express();
-//const saucesRoutes = require('./routes/sauces');
+const postsRoutes = require('./routes/posts');
+const commentsRoutes = require('./routes/comments');
 const userRoutes = require('./routes/user');
-//const path = require('path');
 require('dotenv').config();
 
 app.use(express.json());
@@ -17,7 +17,8 @@ app.use((req, res, next) => {
 
 
 //appel des routes pour l'authentification et les produits
-//app.use('/api/posts', postsRoutes);
+app.use('/api/posts', postsRoutes);
+app.use('/api/comments', commentsRoutes);
 app.use('/api/auth', userRoutes);
 
 module.exports = app;
