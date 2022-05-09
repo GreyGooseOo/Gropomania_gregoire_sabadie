@@ -4,6 +4,7 @@ const app = express();
 const postsRoutes = require('./routes/posts');
 const commentsRoutes = require('./routes/comments');
 const userRoutes = require('./routes/user');
+const path = require('path');
 require('dotenv').config();
 
 app.use(express.json());
@@ -15,6 +16,8 @@ app.use((req, res, next) => {
     next();
 });
 
+//stokage des images téléchargé dans le dossier /images
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 //appel des routes pour l'authentification et les produits
 app.use('/api/posts', postsRoutes);

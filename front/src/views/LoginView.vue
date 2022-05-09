@@ -67,7 +67,7 @@ export default {
           return  res.json();      
       })
       .then (function(value){
-
+        localStorage.setItem('admin', value.admin);
         if(value.token.length > 0 ){
           localStorage.setItem('token', JSON.stringify(value.token));
           var newUlr = document.location.href.replace('login','dashboard');

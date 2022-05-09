@@ -20,7 +20,8 @@
      <img alt="groupomania logo" src="../assets/icon-left-font.svg">
    </div>
  </div>
-<topic-component v-for="(topic,topicIndex) in tableauTopics" :key="topic.id" v-model="tableauTopics[topicIndex]" @article-suppr="supprArticle" class="mb-5"></topic-component>
+<topic-component v-for="(topic,topicIndex) in tableauTopics" :key="topic.id" v-model="tableauTopics[topicIndex]"
+ @article-suppr="supprArticle" class="mb-5" :isAdmin="isAdmin"></topic-component>
 </div>
 </template>
 
@@ -33,7 +34,8 @@ export default {
     return {
       titreNouvelArticle : "",
       textNouvelArticle : "",
-      tableauTopics : []
+      tableauTopics : [],
+      isAdmin : false
     }
   },
   components: {
@@ -76,25 +78,29 @@ export default {
             return  res.json();        
         }
       })
-      .then (function(topics){
+      .then (function(topics)  {
         that.tableauTopics = topics;
       })
       .catch(function(err){
       alert(err)
       })
     },
-    supprArticle(articleId,message){
-      var index = this.tableauTopics.findIndex(t => t.topicId == articleId);
-      this.tableauTopics.splice(index,1);
-      this.$bvToast.toast(`${message}`, {
-          title: `Suppression`,
-          toaster: 'b-toaster-top-right',
-          solid: true,
-          appendToast: false,
-          variant : 'Danger',
-          noAutoHide : false
-
-        });
+    supprArticle(articleId, message,isErr){
+      if(isErr){
+        alert(message);
+      }else{
+        var index = this.tableauTopics.findIndex(t => t.topicId == articleId);
+        this.tableauTopics.splice(index,1);
+        this.$bvToast.toast(message, {
+        title: `Suppression`,
+        toaster: 'b-toaster-top-right',
+        solid: true,
+        appendToast: false,
+        variant : 'Danger',
+        noAutoHide:true
+      });
+      }
+      
       /*  this.$bvToast.toast(`${message} 8`, {
           toaster: 'b-toaster-top-right',
           solid: false,
@@ -106,6 +112,7 @@ export default {
   },
 
   mounted: function() {
+    this.isAdmin = JSON.parse(localStorage.getItem('admin'));
     this.recupererArticles();
   }
 }

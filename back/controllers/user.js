@@ -27,6 +27,10 @@ exports.getSignup = (req, res, next) => {
       })
 });
 }
+exports.photo = (req, res, next) => {
+  console.log(req.file.filename);
+  res.status(201).json({ message: 'Photo ok !' })
+}
 //fonction permettant la création d'un compte
 exports.signup = (req, res, next) => {
   //vérification de la bonne comformité de l'email grace a une regex
@@ -34,10 +38,11 @@ exports.signup = (req, res, next) => {
     return res.status(400).json({ error : 'Email non correct'});
   };
   //vérification de la présence de tous les élements
-  if(!req.body.mdp || !req.body.nom || !req.body.prenom || !req.body.email || !req.body.pseudo || !req.body.photo_url ){
+  if(!req.body.mdp || !req.body.nom || !req.body.prenom || !req.body.email || !req.body.pseudo){
     return res.status(400).json({ error : 'Paramètre manquant'});
   };
   //haschage du mot de passe dans la base de donnée
+  console.log(req.file.filename);
   bcrypt.hash(req.body.mdp, 10)
   .then(hash => {
     const user = {
@@ -46,13 +51,13 @@ exports.signup = (req, res, next) => {
       pseudo : req.body.pseudo,
       email: req.body.email,
       password : hash,
-      photo_url : req.body.photo_url
+      photo_url : `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     };
     if(req.body.token && req.body.token.length > 0 ){
-        var decodeToken = jwt.verify(req.body.token, process.env.TOKEN_JWT);
-        var id = decodeToken.id;
+      var decodeToken = jwt.verify(req.body.token, process.env.TOKEN_JWT);
+      var id = decodeToken.id;
       baseDeDonnees.query("UPDATE `utilisateurs` SET `nom`=?,`prenom`=?,`pseudo`=?,`password`=?,`email`=?,`photo_url`=? WHERE `id` = ?"
-      ,[user.nom,user.prenom,user.pseudo,user.password,user.email,user.photo_url,id], function (err, user) {
+      ,[user.nom, user.prenom, user.pseudo, user.password, user.email, user.photo_url, id], function (err, user) {
         if(err){
           if (err.errno == 1062){
             var cibleErreur = err.sqlMessage.split('utilisateurs.')[1].split(`'`)[0]
@@ -60,48 +65,46 @@ exports.signup = (req, res, next) => {
           }else{
             throw err
           }
-          
         }else{
           res.status(201).json({ message: 'Profil modifié !' })
         }
       });
-      
     }else{
       baseDeDonnees.query("INSERT INTO `utilisateurs`(`nom`, `prenom`, `pseudo`, `password`, `email`, `photo_url`) VALUES (?,?,?,?,?,?)",
-      [user.nom,user.prenom,user.pseudo,user.password,user.email,user.photo_url], function (err, user) {
-        if(err){
-          if (err.errno == 1062){
-            var cibleErreur = err.sqlMessage.split('utilisateurs.')[1].split(`'`)[0]
-            res.status(401).json({ message: `${cibleErreur} déjà existant !` })
-          }else{
-            throw err
-          }
-          
+      [user.nom, user.prenom, user.pseudo, user.password, user.email, user.photo_url], function (err, user) {
+      if(err){
+        if (err.errno == 1062){
+          var cibleErreur = err.sqlMessage.split('utilisateurs.')[1].split(`'`)[0];
+          res.status(401).json({ message: `${cibleErreur} déjà existant !` });
         }else{
-          res.status(201).json({ message: 'Utilisateur créé !' })
+          throw err
         }
+      }else{
+        res.status(201).json({ message: 'Utilisateur créé !' })
+      }
       });
     }
-})
+  })
   .catch(error => res.status(500).json({ error }));
 };
 
 //fonction permettant l'identification d'un utilisateur
 exports.login = (req, res, next) => { 
-  baseDeDonnees.query("SELECT `id`,`pseudo`,`password` FROM `utilisateurs` WHERE `pseudo`= ?; ",[req.body.pseudo], function (err, user) {
+  baseDeDonnees.query("SELECT `id`,`pseudo`,`password`, `admin` FROM `utilisateurs` WHERE `pseudo`= ?; ",[req.body.pseudo], function (err, user) {
     if (err) throw  err;
     if (!user || user.length === 0) {
-      return res.status(401).json({ err: 'Utilisateur non trouvé !',token: "" });
+      return res.status(401).json({ err: 'Utilisateur non trouvé !',token: "", admin : false});
     }
     bcrypt.compare(req.body.mdp, user[0].password)
         .then(valid => {
           if (!valid) {
-            return res.status(401).json({ err: 'Mot de passe incorrect !',token: "" });
+            return res.status(401).json({ err: 'Mot de passe incorrect !',token: "", admin : false});
           }
           res.status(200).json({
           //création du token d'authentification
             err : "",
-            token: jwt.sign({ id: user[0].id}, process.env.TOKEN_JWT, { expiresIn: '24h' })
+            token: jwt.sign({ id: user[0].id}, process.env.TOKEN_JWT, { expiresIn: '24h' }),
+            admin: user[0].admin
             })
         });
     
