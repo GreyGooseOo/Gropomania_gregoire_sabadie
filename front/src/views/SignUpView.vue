@@ -49,9 +49,9 @@
       <b-button variant="outline-success" class="d-flex justify-content-center mx-auto" style="width : 50%" @click="tryToSave()">Valider</b-button>
   </div>
  <div class="col-md-3">
-    <img alt="photo profil" scr="../assets/icon.png" class="d-flex justify-content-center mx-auto mb-4" style="width : 200px; height : 200px; object-fit: cover;">
+    <img alt="photo profil" scr="http://localhost:3000/images/photo_profil_fdsfsd.png" class="d-flex justify-content-center mx-auto mb-4" style="width : 200px; height : 200px; object-fit: cover;">
 
-    <b-form-group label="Small:" label-cols-sm="2" label-size="sm">
+    <b-form-group label="" label-cols-sm="2" label-size="sm">
       <b-form-file id="file-small" size="sm" @change="previewFile"></b-form-file>
   </b-form-group>
   </div>
@@ -69,6 +69,7 @@ export default {
       login : "",
       mail : "",
       mdp : "",
+      photoUrl:"",
       isTryingToSave : false,
       isModifying : false,
       typePassword : "password"
@@ -111,6 +112,7 @@ export default {
   },
   methods: {
     previewFile() {
+      var that = this;
       const preview = document.querySelector('img');
       const file = document.querySelector('input[type=file]').files[0];
       const reader = new FileReader();
@@ -118,26 +120,11 @@ export default {
       reader.addEventListener("load", function () {
         // on convertit l'image en une chaîne de caractères base64
         preview.src = reader.result;
+        that.photoUrl = preview.src;
       }, false);
 
       if (file) {
         reader.readAsDataURL(file);
-
-        const formData = new FormData();
-        formData.append("file", file);
-
-        fetch("http://localhost:3000/api/auth/photo", { method: "POST",headers: {'Content-Type': 'multipart/form-data'},
-            body: formData
-            })
-          .then (function(res){
-            return res.json();
-          })
-          .then(function(value){
-            alert(value.message);
-          })
-          .catch(function(err){
-            alert(err)
-          })
       }
     },
     afficherMdp(){
@@ -162,7 +149,7 @@ export default {
         var recupToken = JSON.parse(localStorage.getItem('token'));
         var that = this
         fetch("http://localhost:3000/api/auth/signup", { method: "POST",headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({nom : this.nom, prenom : this.prenom, pseudo: this.login,email : this.mail, mdp: this.mdp, token : recupToken})
+            body: JSON.stringify({nom : this.nom, prenom : this.prenom, pseudo: this.login,email : this.mail, mdp: this.mdp,photo_url : this.photoUrl, token : recupToken})
             })
           .then (function(res){
             if(res.ok && !that.isModifying){

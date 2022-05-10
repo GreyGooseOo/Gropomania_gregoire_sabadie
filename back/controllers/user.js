@@ -28,7 +28,10 @@ exports.getSignup = (req, res, next) => {
 });
 }
 exports.photo = (req, res, next) => {
+  console.log(0)
+  console.log(req.file);
   console.log(req.file.filename);
+  
   res.status(201).json({ message: 'Photo ok !' })
 }
 //fonction permettant la création d'un compte
