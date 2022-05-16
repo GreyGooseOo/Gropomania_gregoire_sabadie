@@ -46,10 +46,11 @@
       </b-input-group>
       <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isEmptyMdp ">Champ non remplit</div>
       <div class="alert alert-danger" role="alert" v-if="isTryingToSave && isMdpCorrect ">Le mot de passe doit contenir 10 charactère avec au moins 1 majuscule et 1 chiffre</div>
-      <b-button variant="outline-success" class="d-flex justify-content-center mx-auto" style="width : 50%" @click="tryToSave()">Valider</b-button>
+      <b-button variant="outline-success" class="d-flex justify-content-center mx-auto mb-4" style="width : 50%" @click="tryToSave()">Valider</b-button>
+      <b-button variant="outline-danger" class="d-flex justify-content-center mx-auto" style="width : 50%" v-if="isModifying" @click="tryToDelete()">Supprimer le compte</b-button>
   </div>
  <div class="col-md-3">
-    <img alt="photo profil" scr="http://localhost:3000/images/photo_profil_fdsfsd.png" class="d-flex justify-content-center mx-auto mb-4" style="width : 200px; height : 200px; object-fit: cover;">
+    <img alt="photo profil" :src="photoUrl" class="d-flex justify-content-center mx-auto mb-4" style="width : 200px; height : 200px; object-fit: cover;">
 
     <b-form-group label="" label-cols-sm="2" label-size="sm">
       <b-form-file id="file-small" size="sm" @change="previewFile"></b-form-file>
@@ -69,7 +70,7 @@ export default {
       login : "",
       mail : "",
       mdp : "",
-      photoUrl:"",
+      photoUrl:"http://localhost:3000/images/icon.png",
       isTryingToSave : false,
       isModifying : false,
       typePassword : "password"
@@ -165,6 +166,26 @@ export default {
             alert(err)
           })
       }
+    },
+    tryToDelete(){
+      var recupToken = JSON.parse(localStorage.getItem('token'));
+      fetch("http://localhost:3000/api/auth/delete", { method: "DELETE",headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({token : recupToken, photo_url : this.photoUrl})
+          })
+        .then (function(res){
+          if(res.ok){
+            var newUlr = document.location.href.replace('signup','');
+            localStorage.clear();
+            document.location.href = newUlr;
+          }
+          return res.json();
+        })
+        .then(function(value){
+          alert(value.message);
+        })
+        .catch(function(err){
+          alert(err)
+        })
     }
   },
   mounted: function() {
@@ -188,7 +209,7 @@ export default {
             that.prenom = value.profil.prenom;
             that.login = value.profil.pseudo;
             that.mail = value.profil.email;
-            that.url_photo = value.profil.photo_url;
+            that.photoUrl = value.profil.photo_url;
           }
         })
         .catch(function(err){

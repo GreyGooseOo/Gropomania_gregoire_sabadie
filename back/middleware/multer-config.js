@@ -31,11 +31,10 @@ const MIME_TYPES = {
 module.exports = (req, res, next) => {
   try {
   var uri = req.body.photo_url; 
-  var data = uri.split(',')[1]; 
-  var buf = Buffer.from(data).toString('base64');
-  const extension = MIME_TYPES[buf.mimetype];
-  console.log(extension)
-  var filename = `photo_profil_${req.body.pseudo}.png`;
+  var data = uri.split(',')[1];
+  var buf = Buffer.from(data,'base64');
+  const extension = MIME_TYPES[uri.split(';')[0].split('data:')[1]];
+  var filename = `photo_profil_${req.body.pseudo}.${extension}`;
   req.file = { filename }
   fs.writeFileSync(`./images/${filename}`, buf);
   next();

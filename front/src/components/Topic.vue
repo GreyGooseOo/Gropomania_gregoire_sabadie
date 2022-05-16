@@ -16,7 +16,7 @@
         <b-media>
             <template #aside>
                 <b-row>
-                    <b-img thumbnail fluid :src="urlRequirePhoto" alt="photo profil" style="object-fit: cover; width : 64px; height : 64px"></b-img>
+                    <b-img thumbnail fluid :src="topic.photo_url" style="object-fit: cover; width : 64px; height : 64px; padding : 2%"></b-img>
                 </b-row>
                 <h5 class="ms-3">{{ topic.pseudo }}</h5>
                 <p class="ms-5 mt-2"> {{ topic.date_creation.split("T")[0].split('-').join('/') }}</p>
@@ -44,7 +44,7 @@
                 <b-media>
                     <template #aside>
                         <b-row class="ms-5">
-                            <b-img thumbnail fluid :src="urlRequirePhotoCom(comment.photo_url)" alt="photo profil" style="object-fit: cover; width : 32px; height : 32px"></b-img>
+                            <b-img thumbnail fluid :src="comment.photo_url" style="object-fit: cover; width : 32px; height : 32px; padding : 2%"></b-img>
                         </b-row>
                         <h6 class="mt-0 ms-3">{{comment.pseudo}}</h6>
                     </template>
@@ -78,14 +78,8 @@ export default {
         }
     },
     computed: {
-        urlRequirePhoto(){
-        return require('../assets/photo_profil/'+ this.topic.photo_url);
-        }
     },
     methods : {
-        urlRequirePhotoCom(photoUrlComment){
-        return require('../assets/photo_profil/'+ photoUrlComment);
-        },
         modifArticle(){
         var that = this;
         var recupToken = JSON.parse(localStorage.getItem('token'));

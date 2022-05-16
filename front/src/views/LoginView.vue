@@ -14,7 +14,7 @@
           <b-input-group-prepend is-text>
             Mot de passe
           </b-input-group-prepend>
-          <b-form-input type="password" aria-label="mdp" class="position-relative" v-model="mdp"></b-form-input><br>
+          <b-form-input :type="typePassword" aria-label="mdp" class="position-relative" v-model="mdp"></b-form-input><br>
           <i class="fas fa-eye position-absolute top-50 end-0 translate-middle" @click="afficherMdp()" style="z-index : 99;"></i>
         </b-input-group>
         <div class="alert alert-danger" role="alert" v-if="erreurLog !== null">
@@ -33,7 +33,8 @@ export default {
     return {
       login : "",
       mdp : "",
-      erreurLog : null
+      erreurLog : null,
+      typePassword : "password"
 
     }
   },

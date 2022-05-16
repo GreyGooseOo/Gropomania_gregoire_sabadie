@@ -45,7 +45,6 @@ exports.signup = (req, res, next) => {
     return res.status(400).json({ error : 'Paramètre manquant'});
   };
   //haschage du mot de passe dans la base de donnée
-  console.log(req.file.filename);
   bcrypt.hash(req.body.mdp, 10)
   .then(hash => {
     const user = {
@@ -89,6 +88,27 @@ exports.signup = (req, res, next) => {
     }
   })
   .catch(error => res.status(500).json({ error }));
+};
+
+//fonction permettant de supprimer un utilisateur
+exports.deleteUser = (req, res, next) => {
+  const token = req.body.token;
+  const decodedToken = jwt.verify(token, process.env.TOKEN_JWT);
+  const userId = decodedToken.id;
+    if(!userId){
+      res.status(403).json({message: 'Utilisateur non autorisé' , isErr: true});
+    }else{
+      baseDeDonnees.query("DELETE FROM `utilisateurs` WHERE `id`=?"
+      ,[userId], function (err, result) {
+        if(err) throw err;
+        if(req.body.photo_url !== "http://localhost:3000/images/icon.png"){
+          fs.unlink(req.body.photo_url,(err) => {
+            if (err) throw err;
+         });
+        }
+        res.status(200).json({ message: 'utilisateur supprimé !' , isErr: false});
+      });
+    }  
 };
 
 //fonction permettant l'identification d'un utilisateur

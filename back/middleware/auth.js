@@ -11,15 +11,17 @@ module.exports = (req, res, next) => {
     const token = req.body.token;
     const decodedToken = jwt.verify(token, process.env.TOKEN_JWT);
     const userId = decodedToken.id;
-    if (req.body.userId && req.body.userId !== userId) {
+
+    baseDeDonnees.query("SELECT `admin` FROM `utilisateurs` WHERE `id`= ?; ",[userId], function (err, admin) {
+      if (err) throw  err;
+    })
+    const adminAuth = admin[0].admin;
+    req.auth = { userId, adminAuth };
+
+    if (!adminAuth && req.body.utilisateur_id && req.body.utilisateur_id !== userId) {
       throw res.status(403).json({ error: 'unauthorized request' });
     } else {
-      baseDeDonnees.query("SELECT `admin` FROM `utilisateurs` WHERE `id`= ?; ",[userId], function (err, admin) {
-        if (err) throw  err;
-        const adminAuth = admin[0].admin;
-        req.auth = { userId, adminAuth };
         next();
-      })
     }
   } catch {
     res.status(401).json({

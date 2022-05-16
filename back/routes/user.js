@@ -10,6 +10,7 @@ router.post('/photo', multer, userCtrl.photo);
 router.post('/signup', multer, userCtrl.signup);
 router.post('/login', userCtrl.login);
 router.post('/getsignup', userCtrl.getSignup);
+router.delete('/delete', userCtrl.deleteUser);
 
 
 module.exports = router;
