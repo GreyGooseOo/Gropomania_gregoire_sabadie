@@ -6,9 +6,9 @@ const commentsCtlr = require('../controllers/comments');
 //const multer = require('../middleware/multer-config')
 
 //gestion des différentes option d'implantation dans l'API
-router.post('/',auth, commentsCtlr.createComment);
+router.post('/', commentsCtlr.createComment);
 router.put('/',auth, commentsCtlr.modifyComment);
-router.delete('/:id', auth, commentsCtlr.deleteComment);
+router.delete('/', auth, commentsCtlr.deleteComment);
 
 
 module.exports = router;

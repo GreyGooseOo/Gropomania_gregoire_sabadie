@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
 require('dotenv').config();
+var fs = require('fs'); 
 
 const baseDeDonnees = mysql.createConnection({host: process.env.MYSQL_HOST, user: process.env.MYSQL_USER, password: process.env.MYSQL_PASSWORD, database : "groupamania"});
 
@@ -98,14 +99,17 @@ exports.deleteUser = (req, res, next) => {
     if(!userId){
       res.status(403).json({message: 'Utilisateur non autorisé' , isErr: true});
     }else{
+      baseDeDonnees.query("SELECT `photo_url` FROM `utilisateurs` WHERE `id`=?"
+      ,[userId], function (err, photoUrl) {
+        if(err) throw err;
+
       baseDeDonnees.query("DELETE FROM `utilisateurs` WHERE `id`=?"
       ,[userId], function (err, result) {
         if(err) throw err;
-        if(req.body.photo_url !== "http://localhost:3000/images/icon.png"){
-          fs.unlink(req.body.photo_url,(err) => {
-            if (err) throw err;
-         });
+        if(photoUrl[0].photo_url !== "http://localhost:3000/images/icon.png"){
+          fs.unlinkSync(photoUrl[0].photo_url.split('http://localhost:3000/')[1]);
         }
+        });
         res.status(200).json({ message: 'utilisateur supprimé !' , isErr: false});
       });
     }  

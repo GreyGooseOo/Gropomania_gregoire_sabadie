@@ -145,7 +145,7 @@ export default {
       document.location.href = newUlr;
     },
     tryToSave(){
-      this.isTryingToSave = true
+      this.isTryingToSave = true;
       if(this.isFullOk){
         var recupToken = JSON.parse(localStorage.getItem('token'));
         var that = this

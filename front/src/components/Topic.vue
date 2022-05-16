@@ -48,7 +48,7 @@
                         </b-row>
                         <h6 class="mt-0 ms-3">{{comment.pseudo}}</h6>
                     </template>
-                    <p class="mb-4 ms-5">{{ comment.commentaire }} <a href="#" style="font-size : 12px" v-if="isAdmin || topic.isMyComment">modifier</a> <a href="#" style="font-size : 12px" v-if="isAdmin || topic.isMyComment">supprimer</a></p>
+                    <p class="mb-4 ms-5">{{ comment.commentaire }} <a href="#" class="ms-2" style="font-size : 12px" v-if="isAdmin || comment.isMyComment" @click="modifCommentaire(comment.commentId)">modifier</a> <a href="#" style="font-size : 12px" v-if="isAdmin || comment.isMyComment" @click="supprCommentaire(comment.commentId)">supprimer</a></p>
                 </b-media>
             </div>  
         <b-input-group size="sm">
@@ -120,7 +120,7 @@ export default {
         creationCommentaire(){
             var that = this;
             var recupToken = JSON.parse(localStorage.getItem('token'));
-            fetch("http://localhost:3000/api/comments", { method: "POST",headers: {'Content-Type': 'application/json'},
+            fetch("http://localhost:3000/api/comments/", { method: "POST",headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({commentaire : this.texteCreationCommentaire, postId : this.topic.topicId, token : recupToken})
                 })
             .then (function(res){
@@ -136,10 +136,10 @@ export default {
                 alert(err)
             })
         },
-        modifCommentaire(){
+        modifCommentaire(comment_id){
             var recupToken = JSON.parse(localStorage.getItem('token'));
             fetch("http://localhost:3000/api/comments", { method: "PUT",headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({commentId : this.topic.topicId ,utilisateur_id: this.topic.utilisateur_id, commentaire : this.texteCreationCommentaire, token : recupToken})
+            body: JSON.stringify({commentId : comment_id ,utilisateur_id: this.topic.utilisateur_id, commentaire : this.texteCreationCommentaire, token : recupToken})
             })
             .then (function(res){
                 if(res.ok){
@@ -153,10 +153,10 @@ export default {
                 alert(err)
             })
         },
-        supprCommentaire(){
+        supprCommentaire(comment_id){
             var recupToken = JSON.parse(localStorage.getItem('token'));
-            fetch("http://localhost:3000/api/comments/" + this.topic.commentId, { method: "DELETE",headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({commentId : this.topic.topicId ,utilisateur_id: this.topic.utilisateur_id, token : recupToken})
+            fetch("http://localhost:3000/api/comments", { method: "DELETE",headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({commentId : comment_id ,utilisateur_id: this.topic.utilisateur_id, token : recupToken})
             })
             .then (function(res){
                 if(res.ok){
