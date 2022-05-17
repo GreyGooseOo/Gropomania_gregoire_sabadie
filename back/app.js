@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 //stokage des images téléchargé dans le dossier /images
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-//appel des routes pour l'authentification et les produits
+//appel des routes pour l'authentification, les posts et les commentaires
 app.use('/api/posts', postsRoutes);
 app.use('/api/comments', commentsRoutes);
 app.use('/api/auth', userRoutes);

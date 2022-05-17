@@ -3,12 +3,11 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth')
 const commentsCtlr = require('../controllers/comments');
-//const multer = require('../middleware/multer-config')
 
-//gestion des différentes option d'implantation dans l'API
+//gestion des différentes option d'implantation des commentaires dans l'API
 router.post('/', commentsCtlr.createComment);
-router.put('/',auth, commentsCtlr.modifyComment);
-router.delete('/', auth, commentsCtlr.deleteComment);
+router.put('/:id',auth, commentsCtlr.modifyComment);
+router.delete('/delete/:id', auth, commentsCtlr.deleteComment);
 
 
 module.exports = router;

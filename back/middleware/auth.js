@@ -15,16 +15,14 @@ module.exports = (req, res, next) => {
     baseDeDonnees.query("SELECT `admin` FROM `utilisateurs` WHERE `id`= ?; ",[userId], function (err, admin) {
       if (err) throw  err;
       adminAuth = admin[0].admin;
-    })
-    if (!adminAuth && req.body.utilisateur_id && req.body.utilisateur_id != userId) {
-      throw res.status(403).json({ error: 'unauthorized request' });
-    } else {
+      if (!adminAuth && req.body.utilisateur_id && req.body.utilisateur_id != userId) {
+        throw res.status(403).json({message: 'Utilisateur non autorisé', isErr: true });
+      } else {
         req.auth = { userId, adminAuth };
         next();
-    }
+      }
+    })
   } catch {
-    res.status(401).json({
-      error: new Error('Invalid request!')
-    });
+    res.status(401).json({message: 'Requète invalide', isErr: true });
   }
 };

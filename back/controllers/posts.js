@@ -4,7 +4,7 @@ const mysql = require('mysql');
 
 const baseDeDonnees = mysql.createConnection({host: process.env.MYSQL_HOST, user: process.env.MYSQL_USER, password: process.env.MYSQL_PASSWORD, database : "groupamania"});
 
-//fonction permettant de créer une sauce
+//fonction permettant de créer un post
 exports.createPost = (req, res, next) => {
   let token = req.body.token;
   let decodedToken = jwt.verify(token, process.env.TOKEN_JWT);
@@ -18,7 +18,7 @@ exports.createPost = (req, res, next) => {
   }
 }
 
-//fonction permettant d'obtenir un tableau contenant les information des différentes sauces de l'API
+//fonction permettant d'obtenir un tableau contenant les information des différentes posts de l'API
 exports.getAllPosts = (req, res, next) => {
   let token = req.body.token;
   let decodedToken = jwt.verify(token, process.env.TOKEN_JWT);
@@ -30,7 +30,7 @@ exports.getAllPosts = (req, res, next) => {
 
     topics.forEach(t => t.isMyPost = (userId === t.utilisateur_id));
 
-    baseDeDonnees.query("SELECT `commentaires`.`id` AS commentId, `commentaire`, `utilisateur_id`, `topic_id`, `date_creation`, `admin_utilisateur_id`, `date_modif_admin`,`pseudo`,`photo_url`, 0 AS isMyComment FROM `commentaires` LEFT JOIN `utilisateurs` ON `utilisateurs`.`id`= `commentaires`.`utilisateur_id` ORDER BY  `topic_id`,`date_creation` DESC;",
+    baseDeDonnees.query("SELECT `commentaires`.`id` AS commentId, `commentaire`, `utilisateur_id`, `topic_id`, `date_creation`, `admin_utilisateur_id`, `date_modif_admin`,`pseudo`,`photo_url`, 0 AS isMyComment FROM `commentaires` LEFT JOIN `utilisateurs` ON `utilisateurs`.`id`= `commentaires`.`utilisateur_id` ORDER BY  `topic_id`,`date_creation` ASC;",
     function (err, comments) {
       if(err) throw err;
 
@@ -53,7 +53,7 @@ exports.getAllPosts = (req, res, next) => {
   }
 };
 
-//fonction permettant de modifié une sauce si l'utilisateur est le créateur de la sauce
+//fonction permettant de modifié un post si l'utilisateur est le créateur du post ou un admin
 exports.modifyPost = (req, res, next) => {
   if(req.auth.adminAuth){
     baseDeDonnees.query("UPDATE `topics` SET `titre`= ?,`article`=?, `admin_utilisateur_id`=?,`date_modif_admin`= NOW() WHERE `id` = ?"
@@ -62,18 +62,14 @@ exports.modifyPost = (req, res, next) => {
       res.status(200).json({ message: 'Article modifié par admin!', isErr: false });
     });
   }else{
-    if(req.auth.userId !== req.body.utilisateur_id){
-      res.status(403).json({message: 'Utilisateur non autorisé' , isErr: true});
-    }else{
-      baseDeDonnees.query("UPDATE `topics` SET `titre`= ?,`article`=?,`date_creation`= NOW() WHERE `id` = ?"
-      ,[req.body.titre, req.body.text, req.body.postId], function (err, result) {
-        if(err) throw err;
-        res.status(200).json({ message: 'Article modifié !' , isErr: false});
-      });
-    }  
+    baseDeDonnees.query("UPDATE `topics` SET `titre`= ?,`article`=?,`date_creation`= NOW() WHERE `id` = ?"
+    ,[req.body.titre, req.body.text, req.body.postId], function (err, result) {
+      if(err) throw err;
+      res.status(200).json({ message: 'Article modifié !' , isErr: false});
+    });  
   }  
 };
-//fonction permettant de supprimer une sauce si l'utilisateur est le créateur de la sauce
+//fonction permettant de supprimer un post si l'utilisateur est le créateur du post ou un admin
 exports.deletePost = (req, res, next) => {
   if(req.auth.adminAuth){
     baseDeDonnees.query("DELETE FROM `topics` WHERE `id`=?"
@@ -82,66 +78,10 @@ exports.deletePost = (req, res, next) => {
       res.status(200).json({ message: 'Article supprimé par admin !' , isErr: false});
     });
   }else{
-    if(req.auth.userId !== req.body.utilisateur_id){
-      res.status(403).json({message: 'Utilisateur non autorisé' , isErr: true});
-    }else{
-      baseDeDonnees.query("DELETE FROM `topics` WHERE `id`=?"
-      ,[req.body.postId], function (err, result) {
-        if(err) throw err;
-        res.status(200).json({ message: 'Article supprimé !' , isErr: false});
-      });
-    }  
+    baseDeDonnees.query("DELETE FROM `topics` WHERE `id`=?"
+    ,[req.body.postId], function (err, result) {
+      if(err) throw err;
+      res.status(200).json({ message: 'Article supprimé !' , isErr: false});
+    });
   }
 };
-/*
-//fonction permettant d'obtenir les information d'une sauce dans l'API
-exports.getOnePost = (req, res, next) => {
-    Sauce.findOne({_id: req.params.id})
-    .then((sauce) => {
-        res.status(200).json(sauce);
-    })
-    .catch((error) => {
-      res.status(404).json({ error: error });
-    });
-  };
-
-//fonction permettant la gestion des likes/dislikes d'une sauce
-exports.likePost = (req, res, next) =>{
-  Sauce.findOne({_id: req.params.id})
-  .then((sauce) => {
-    if (!sauce) {
-      res.status(404).json({error: new Error('No such sauce!')});
-    }
-    //remise à zéro du like
-    if(req.body.like === 0){
-      if(sauce.usersDisliked.indexOf(req.body.userId)!==-1){
-        sauce.dislikes--;
-        sauce.usersDisliked.splice(sauce.usersDisliked.indexOf(req.body.userId),1);
-      }
-      if(sauce.usersLiked.indexOf(req.body.userId)!==-1){
-        sauce.likes--;
-        sauce.usersLiked.splice(sauce.usersLiked.indexOf(req.body.userId),1);
-      }
-    }
-    //ajout d'un like
-    if(req.body.like === 1){
-      sauce.likes++;
-      sauce.usersLiked.push(req.body.userId);
-    }
-    //ajout d'un dislike
-    if(req.body.like === -1){
-      sauce.dislikes++;
-      sauce.usersDisliked.push(req.body.userId);
-    }
-    Sauce.updateOne({_id: req.params.id}, sauce)
-    .then(() => {
-      res.status(201).json({message: 'Likes updated'});
-    })
-    .catch((error) => {
-      res.status(401).json({ error: error });
-    });
-  })
-  .catch((error) => {
-    res.status(400).json({ error: error });
-  });
-};*/

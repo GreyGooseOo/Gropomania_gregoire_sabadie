@@ -1,17 +1,5 @@
 <template>
 <div>
-<!-- liste de reponses 
-    <div class="row">
-    <p v-for="comment in comentaireTopic" :key="comment"> {{ comment }}</p>
-    </div>
-    <div class="row">
-        <b-input-group class="mb-2">
-        <b-input-group-prepend is-text>
-          Commenter
-        </b-input-group-prepend>
-        <b-form-input aria-label="comment" v-model="commentaire" type="text"></b-form-input>
-      </b-input-group>
-    </div>-->
     <b-card>
         <b-media>
             <template #aside>
@@ -21,20 +9,22 @@
                 <h5 class="ms-3">{{ topic.pseudo }}</h5>
                 <p class="ms-5 mt-2"> {{ topic.date_creation.split("T")[0].split('-').join('/') }}</p>
                 <template v-if="isAdmin || topic.isMyPost">
-                    <div>
-                        <b-button v-b-modal="'modal-modif-'+ topic.topicId" :id="'btn-modal-modif-'+ topic.topicId" class="ms-5">Modifier</b-button>
-                        <b-modal :id="'modal-modif-' + topic.topicId" :title="'Modification de l article ' + topic.topicId" @ok="modifArticle">
-                            <b-input-group class="mb-4">
-                                <b-form-input aria-label="titre" :id="'titre-modal-modif-' + topic.topicId" v-model="modifTitreArticle" placeholder="Titre de l'article"></b-form-input>
-                            </b-input-group>
-                            <b-form-textarea :id="'textarea-modal-modif-' + topic.topicId" class="mb-4" v-model="modifTextArticle" placeholder="Text de l'article ..." rows="3" max-rows="6"></b-form-textarea>
-                        </b-modal>
-                    </div>
-                    <div>
-                        <b-button v-b-modal="'modal-suppr-'+ topic.topicId"  :id="'btn-modal-suppr-'+ topic.topicId" class="ms-3" variant="danger">Supprimmer</b-button>
-                        <b-modal :id="'modal-suppr-' + topic.topicId" :title="'suppression de l article ' + topic.topicId" @ok="supprArticle()">
-                            <p class="my-4">Voulez-vous vraiment supprimer cet article</p>
-                        </b-modal>
+                    <div class="d-flex flex-wrap">
+                        <div>
+                            <b-button v-b-modal="'modal-modif-'+ topic.topicId" :id="'btn-modal-modif-'+ topic.topicId" class="ms-5">Modifier</b-button>
+                            <b-modal :id="'modal-modif-' + topic.topicId" :title="'Modification de l article ' + topic.topicId" @ok="modifArticle">
+                                <b-input-group class="mb-4">
+                                    <b-form-input aria-label="titre" :id="'titre-modal-modif-' + topic.topicId" v-model="modifTitreArticle" placeholder="Titre de l'article"></b-form-input>
+                                </b-input-group>
+                                <b-form-textarea :id="'textarea-modal-modif-' + topic.topicId" class="mb-4" v-model="modifTextArticle" placeholder="Text de l'article ..." rows="3" max-rows="6"></b-form-textarea>
+                            </b-modal>
+                        </div>
+                        <div>
+                            <b-button v-b-modal="'modal-suppr-'+ topic.topicId"  :id="'btn-modal-suppr-'+ topic.topicId" class="ms-3" variant="danger">Supprimmer</b-button>
+                            <b-modal :id="'modal-suppr-' + topic.topicId" :title="'suppression de l article ' + topic.topicId" @ok="supprArticle()">
+                                <p class="my-4">Voulez-vous vraiment supprimer cet article</p>
+                            </b-modal>
+                        </div>
                     </div>
                 </template>
             </template>
@@ -48,10 +38,23 @@
                         </b-row>
                         <h6 class="mt-0 ms-3">{{comment.pseudo}}</h6>
                     </template>
-                    <p class="mb-4 ms-5">{{ comment.commentaire }} <a href="#" class="ms-2" style="font-size : 12px" v-if="isAdmin || comment.isMyComment" @click="modifCommentaire(comment.commentId)">modifier</a> <a href="#" style="font-size : 12px" v-if="isAdmin || comment.isMyComment" @click="supprCommentaire(comment.commentId)">supprimer</a></p>
+                    <p class="ms-5">{{comment.commentaire}}
+                        <template v-if="isAdmin || comment.isMyComment">
+                            <b-button  style="font-size : 10px; padding : 3px" v-b-modal="'modal-suppr-'+ topic.topicId + '-' + comment.commentId" 
+                            :id="'btn-modal-suppr-'+ topic.topicId+ '-' + comment.commentId" class="ms-3" variant="danger">supprimmer</b-button>
+
+                            <b-button  style="font-size : 10px; padding : 3px" @click="openModalModif(comment)" :id="'btn-modal-modif-'+ topic.topicId+ '-' + comment.commentId" class="ms-3">modifier</b-button>
+                        </template>
+                        <b-modal :id="'modal-suppr-' + topic.topicId + '-' + comment.commentId" :title="'suppression de commentaire ' + topic.topicId + '-' + comment.commentId" @ok="supprCommentaire(comment.commentId,comment.utilisateur_id)">
+                            <span class="my-4">Voulez-vous vraiment supprimer ce commentaire</span>
+                        </b-modal>
+                    </p>
                 </b-media>
-            </div>  
-        <b-input-group size="sm">
+            </div> 
+            <b-modal :ref="'modal-modif-comment-' + topic.topicId" :id="'modal-modif-comment-' + topic.topicId" :title="'Modification de commentaire ' + topic.topicId" @ok="modifCommentaire()">
+                <b-form-textarea :id="'textarea-modal-modif-comment-' + topic.topicId" class="mb-4" v-model="modifCom" placeholder="Texte du commentaire" rows="3" max-rows="6"></b-form-textarea>
+            </b-modal> 
+            <b-input-group size="sm">
                 <b-form-input v-model="texteCreationCommentaire"></b-form-input>
                 <b-input-group-append>
                     <b-button size="sm" text="Button" variant="outline-primary" @click="creationCommentaire">Commentez</b-button>
@@ -72,14 +75,22 @@ export default {
     props: ['topic', 'isAdmin'],
     data(){ return{
         texteCreationCommentaire:"",
+        modifCom: "",
+        idModifCom : null,
+        utilisateurIdModifCom : null,
         modifTitreArticle: this.topic.titre,
         modifTextArticle: this.topic.article,
-
         }
     },
     computed: {
     },
     methods : {
+        openModalModif(comment){
+            this.modifCom= comment.commentaire;
+            this.idModifCom = comment.commentId;
+            this.utilisateurIdModifCom = comment.utilisateur_id;
+            this.$refs['modal-modif-comment-' + comment.topic_id].show()
+        },
         modifArticle(){
         var that = this;
         var recupToken = JSON.parse(localStorage.getItem('token'));
@@ -131,40 +142,41 @@ export default {
             .then(function(value){
                 alert(value.message);
                 that.texteCreationCommentaire ="";
+                that.$emit('modification-affichage');
             })
             .catch(function(err){
                 alert(err)
             })
         },
-        modifCommentaire(comment_id){
+        modifCommentaire(){
+            var that = this;
             var recupToken = JSON.parse(localStorage.getItem('token'));
-            fetch("http://localhost:3000/api/comments", { method: "PUT",headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({commentId : comment_id ,utilisateur_id: this.topic.utilisateur_id, commentaire : this.texteCreationCommentaire, token : recupToken})
+            fetch("http://localhost:3000/api/comments/" + this.idModifCom, { method: "PUT",headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({commentId : this.idModifCom ,utilisateur_id: this.utilisateurIdModifCom, commentaire : this.modifCom, token : recupToken})
             })
             .then (function(res){
-                if(res.ok){
-                    return res.json();
-                }
+                return res.json();
             })
             .then(function(value){
                 alert(value.message);
+                that.$emit('modification-affichage');
             })
             .catch(function(err){
                 alert(err)
             })
         },
-        supprCommentaire(comment_id){
+        supprCommentaire(comment_id,comment_utilisateur_id){
+            var that = this;
             var recupToken = JSON.parse(localStorage.getItem('token'));
-            fetch("http://localhost:3000/api/comments", { method: "DELETE",headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({commentId : comment_id ,utilisateur_id: this.topic.utilisateur_id, token : recupToken})
+            fetch("http://localhost:3000/api/comments/delete/" + comment_id, { method: "DELETE",headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({commentId : comment_id ,utilisateur_id: comment_utilisateur_id, token : recupToken})
             })
             .then (function(res){
-                if(res.ok){
-                    return res.json();
-                } 
+                return res.json();
             })
             .then(function(value){
                 alert(value.message);
+                that.$emit('modification-affichage');
             })
             .catch(function(err){
                 alert(err)

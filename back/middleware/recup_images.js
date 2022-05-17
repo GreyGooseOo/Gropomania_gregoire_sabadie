@@ -30,7 +30,7 @@ const MIME_TYPES = {
 
 module.exports = (req, res, next) => {
   try {
-    if(req.body.photo_url !== "http://localhost:3000/images/icon.png"){
+    if(req.body.photo_url.split('images/')[0] !== "http://localhost:3000/"){
       var uri = req.body.photo_url; 
       var data = uri.split(',')[1];
       var buf = Buffer.from(data,'base64');
@@ -46,6 +46,6 @@ module.exports = (req, res, next) => {
     }
   
   } catch {
-  res.status(401).json({error: new Error('Invalid request!')});
+  res.status(401).json( {message: 'image non chargé' , isErr: true});
   }
 }

@@ -18,7 +18,7 @@ exports.createComment = (req, res, next) => {
   }
 }
 
-//fonction permettant de modifié uncommentaire si l'utilisateur est le créateur du commentaire
+//fonction permettant de modifié un commentaire si l'utilisateur est le créateur du commentaire ou un admin
 exports.modifyComment = (req, res, next) => {
   if(req.auth.adminAuth){
     baseDeDonnees.query("UPDATE `commentaires` SET `commentaire`= ?, `admin_utilisateur_id`=?,`date_modif_admin`= NOW() WHERE `id` = ?"
@@ -27,18 +27,14 @@ exports.modifyComment = (req, res, next) => {
       res.status(200).json({ message: 'Commentaire modifié par admin!' , isErr: false});
     });
   }else{
-    if(req.auth.userId !== req.body.utilisateur_id){
-      res.status(403).json({message: 'Utilisateur non autorisé' , isErr: true});
-    }else{
-      baseDeDonnees.query("UPDATE `commentaires` SET `commentaire`= ?,`date_creation`=NOW() WHERE `id` = ?"
-      ,[req.body.commentaire, req.body.commentId], function (err, result) {
-      if(err) throw err;
-      res.status(200).json({ message: 'Commentaire modifié !' , isErr: false});
-      })
-    }  
+    baseDeDonnees.query("UPDATE `commentaires` SET `commentaire`= ?,`date_creation`=NOW() WHERE `id` = ?"
+    ,[req.body.commentaire, req.body.commentId], function (err, result) {
+    if(err) throw err;
+    res.status(200).json({ message: 'Commentaire modifié !' , isErr: false});
+    })  
   }  
 };
-//fonction permettant de supprimer une sauce si l'utilisateur est le créateur de la sauce
+//fonction permettant de supprimer un commentaire si l'utilisateur est le créateur du commentaire ou un admin
 exports.deleteComment = (req, res, next) => {
   if(req.auth.adminAuth){
     baseDeDonnees.query("DELETE FROM `commentaires` WHERE `id`=?"
@@ -47,14 +43,10 @@ exports.deleteComment = (req, res, next) => {
       res.status(200).json({ message: 'Commentaire supprimé par admin !' , isErr: false});
     });
   }else{
-    if(req.auth.userId !== req.body.utilisateur_id){
-      res.status(403).json({message: 'Utilisateur non autorisé' , isErr: true});
-    }else{
-      baseDeDonnees.query("DELETE FROM `commentaires` WHERE `id`=?"
-      ,[req.body.commentId], function (err, result) {
-      if(err) throw err;
-      res.status(200).json({ message: 'Commentaire supprimé !' , isErr: false});
-      })
-    }  
+    baseDeDonnees.query("DELETE FROM `commentaires` WHERE `id`=?"
+    ,[req.body.commentId], function (err, result) {
+    if(err) throw err;
+    res.status(200).json({ message: 'Commentaire supprimé !' , isErr: false});
+    })
   }
 };

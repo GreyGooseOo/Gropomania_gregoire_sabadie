@@ -10,8 +10,8 @@
      <h1>Bienvenue sur votre solution de communication interne</h1>
    </div>
    <div class="col-md-12 d-flex justify-content-around mt-5">
-    <b-button variant="outline-primary" class="col-md-3"><router-link to="/signup">Créer un compte</router-link></b-button>
-    <b-button variant="outline-primary" class="col-md-3"><router-link to="/login">Connexion</router-link></b-button>
+    <router-link to="/signup" class="col-md-3 mx-auto"><b-button variant="outline-primary">Créer un compte</b-button></router-link>
+    <router-link to="/login" class="col-md-3"><b-button variant="outline-primary" >Connexion</b-button></router-link>
    </div>
  </div>
 </div>
@@ -23,6 +23,9 @@
 export default {
   name: 'HomeView',
   components: {
+  },
+  mounted: function() {
+    localStorage.clear();
   }
 }
 </script>

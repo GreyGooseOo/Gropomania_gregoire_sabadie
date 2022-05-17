@@ -5,7 +5,7 @@ const auth = require('../middleware/auth')
 const postsCtlr = require('../controllers/posts');
 
 
-//gestion des différentes option d'implantation dans l'API
+//gestion des différentes option d'implantation des posts dans l'API
 router.post('/',auth, postsCtlr.createPost);
 router.post('/getposts', postsCtlr.getAllPosts);
 router.put('/',auth, postsCtlr.modifyPost);
