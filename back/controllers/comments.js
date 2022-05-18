@@ -1,4 +1,4 @@
-//appel du plugin et du code pour le bon fonctionnement du controlleur
+//appel des plugins pour le bon fonctionnement du controlleur
 const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
 
@@ -18,7 +18,7 @@ exports.createComment = (req, res, next) => {
   }
 }
 
-//fonction permettant de modifié un commentaire si l'utilisateur est le créateur du commentaire ou un admin
+//fonction permettant de modifier un commentaire si l'utilisateur est le créateur du commentaire ou un admin
 exports.modifyComment = (req, res, next) => {
   if(req.auth.adminAuth){
     baseDeDonnees.query("UPDATE `commentaires` SET `commentaire`= ?, `admin_utilisateur_id`=?,`date_modif_admin`= NOW() WHERE `id` = ?"
@@ -29,8 +29,8 @@ exports.modifyComment = (req, res, next) => {
   }else{
     baseDeDonnees.query("UPDATE `commentaires` SET `commentaire`= ?,`date_creation`=NOW() WHERE `id` = ?"
     ,[req.body.commentaire, req.body.commentId], function (err, result) {
-    if(err) throw err;
-    res.status(200).json({ message: 'Commentaire modifié !' , isErr: false});
+      if(err) throw err;
+      res.status(200).json({ message: 'Commentaire modifié !' , isErr: false});
     })  
   }  
 };
@@ -45,8 +45,8 @@ exports.deleteComment = (req, res, next) => {
   }else{
     baseDeDonnees.query("DELETE FROM `commentaires` WHERE `id`=?"
     ,[req.body.commentId], function (err, result) {
-    if(err) throw err;
-    res.status(200).json({ message: 'Commentaire supprimé !' , isErr: false});
+      if(err) throw err;
+      res.status(200).json({ message: 'Commentaire supprimé !' , isErr: false});
     })
   }
 };
