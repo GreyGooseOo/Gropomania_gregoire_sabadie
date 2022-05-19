@@ -13,7 +13,7 @@
             <b-input-group class="mb-4">
               <b-form-input aria-label="titre" v-model="titreNouvelArticle" placeholder="Titre de l'article (max 250 caratères)" maxlength="250"></b-form-input>
             </b-input-group>
-            <b-form-textarea id="textarea" class="mb-4" v-model="textNouvelArticle" placeholder="Text de l'article ... max 500 caratères" rows="3"
+            <b-form-textarea id="textarea" class="mb-4" v-model="textNouvelArticle" placeholder="Texte de l'article ... max 500 caratères" rows="3"
              max-rows="6" maxlength="500">
             </b-form-textarea>
             <img alt="" id="media" :src="mediaNouvelArticle" class="d-flex justify-content-center mx-auto mb-4" style="width : 100px; height : 100px; object-fit: cover;">
@@ -104,27 +104,31 @@ export default {
     },
     //methode appelant l'api pour créer un post
     creationArticle(){
-      var that = this; 
-      var recupToken = JSON.parse(localStorage.getItem('token'));
-      fetch("http://localhost:3000/api/posts", { method: "POST",headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({titre : this.titreNouvelArticle, text: this.textNouvelArticle, photo_url: this.mediaNouvelArticle, token : recupToken})
-      })
-      .then (function(res){
-        if(res.ok){
-          return res.json();
-        }
-      })
-      .then(function(value){
-        alert(value.message);
-        that.recupererArticles();
-        that.titreNouvelArticle = "";
-        that.textNouvelArticle = "";
-        that.mediaNouvelArticle = "";
+      if(this.titreNouvelArticle !=="" && this.textNouvelArticle !==""){
+        var that = this; 
+        var recupToken = JSON.parse(localStorage.getItem('token'));
+        fetch("http://localhost:3000/api/posts", { method: "POST",headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({titre : this.titreNouvelArticle, text: this.textNouvelArticle, photo_url: this.mediaNouvelArticle, token : recupToken})
+        })
+        .then (function(res){
+          if(res.ok){
+            return res.json();
+          }
+        })
+        .then(function(value){
+          alert(value.message);
+          location.reload();
+          that.titreNouvelArticle = "";
+          that.textNouvelArticle = "";
+          that.mediaNouvelArticle = "";
 
-      })
-      .catch(function(err){
-        alert(err)
-      })
+        })
+        .catch(function(err){
+          alert(err)
+        })
+      }else{
+        alert("Veuillez remplir le champ titre et texte de l'article")
+      }
     },
     //methode appelant l'api pour reccuperer l'enssemble des posts et des commentaires pour affichage
     recupererArticles(){

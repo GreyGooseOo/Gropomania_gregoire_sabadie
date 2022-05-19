@@ -103,6 +103,7 @@ export default {
     computed: {
     },
     methods : {
+        //appel du modal pour la modif du commentaire
         openModalModif(comment){
             this.modifCom = comment.commentaire;
             this.idModifCom = comment.commentId;
@@ -111,25 +112,29 @@ export default {
         },
         //methode appelant l'api pour modifier un post
         modifArticle(){
-            var that = this;
-            var recupToken = JSON.parse(localStorage.getItem('token'));
-            fetch("http://localhost:3000/api/posts", { method: "PUT",headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({postId : this.topic.topicId ,utilisateur_id: this.topic.utilisateur_id,
-            titre : this.modifTitreArticle, text: this.modifTextArticle, photo_url : this.modifMediaArticle, token : recupToken})
-            })
-            .then (function(res){
-                return res.json();
-            })
-            .then(function(value){
-                if(!value.isErr){
-                    that.$emit('modification-affichage');
-                    that.modifMediaArticle = that.topic.media_url;
-                }
-                alert(value.message);
-            })
-            .catch(function(err){
-                alert(err)
-            })
+            if(this.modifTextArticle !=="" && this.modifTitreArticle !==""){
+                var that = this;
+                var recupToken = JSON.parse(localStorage.getItem('token'));
+                fetch("http://localhost:3000/api/posts", { method: "PUT",headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({postId : this.topic.topicId ,utilisateur_id: this.topic.utilisateur_id,
+                titre : this.modifTitreArticle, text: this.modifTextArticle, photo_url : this.modifMediaArticle, token : recupToken})
+                })
+                .then (function(res){
+                    return res.json();
+                })
+                .then(function(value){
+                    if(!value.isErr){
+                        that.$emit('modification-affichage');
+                        that.modifMediaArticle = that.topic.media_url;
+                    }
+                    alert(value.message);
+                })
+                .catch(function(err){
+                    alert(err)
+                })
+            }else{
+                alert("Veuillez remplir le champ titre et texte de l'article")
+            }      
         },
         //methode permettant la previsualisation de la photo du post
         previewFile() {
@@ -169,42 +174,51 @@ export default {
         },
         //methode appelant l'api pour creer un commentaire
         creationCommentaire(){
-            var that = this;
-            var recupToken = JSON.parse(localStorage.getItem('token'));
-            fetch("http://localhost:3000/api/comments/", { method: "POST",headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({commentaire : this.texteCreationCommentaire, postId : this.topic.topicId, token : recupToken})
-            })
-            .then (function(res){
-                if(res.ok){
-                return res.json();
-                }
-            })
-            .then(function(value){
-                alert(value.message);
-                that.texteCreationCommentaire ="";
-                that.$emit('modification-affichage');
-            })
-            .catch(function(err){
-                alert(err)
-            })
+            if(this.texteCreationCommentaire !==""){
+                var that = this;
+                var recupToken = JSON.parse(localStorage.getItem('token'));
+                fetch("http://localhost:3000/api/comments/", { method: "POST",headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({commentaire : this.texteCreationCommentaire, postId : this.topic.topicId, token : recupToken})
+                })
+                .then (function(res){
+                    if(res.ok){
+                    return res.json();
+                    }
+                })
+                .then(function(value){
+                    alert(value.message);
+                    that.texteCreationCommentaire ="";
+                    that.$emit('modification-affichage');
+                })
+                .catch(function(err){
+                    alert(err)
+                })
+            }else{
+                alert("Veuillez remplir le champ commentaire")
+            }
+                
         },
         //methode appelant l'api pour modifier un commentaire
         modifCommentaire(){
-            var that = this;
-            var recupToken = JSON.parse(localStorage.getItem('token'));
-            fetch("http://localhost:3000/api/comments/" + this.idModifCom, { method: "PUT",headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({commentId : this.idModifCom ,utilisateur_id: this.utilisateurIdModifCom, commentaire : this.modifCom, token : recupToken})
-            })
-            .then (function(res){
-                return res.json();
-            })
-            .then(function(value){
-                alert(value.message);
-                that.$emit('modification-affichage');
-            })
-            .catch(function(err){
-                alert(err)
-            })
+            if(this.modifCom !== ""){
+                var that = this;
+                var recupToken = JSON.parse(localStorage.getItem('token'));
+                fetch("http://localhost:3000/api/comments/" + this.idModifCom, { method: "PUT",headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({commentId : this.idModifCom ,utilisateur_id: this.utilisateurIdModifCom, commentaire : this.modifCom, token : recupToken})
+                })
+                .then (function(res){
+                    return res.json();
+                })
+                .then(function(value){
+                    alert(value.message);
+                    that.$emit('modification-affichage');
+                })
+                .catch(function(err){
+                    alert(err)
+                })
+            }else{
+                alert("Veuillez remplir le champ commentaire")
+            }  
         },
         //methode appelant l'api pour supprimer un commentaire
         supprCommentaire(comment_id,comment_utilisateur_id){
