@@ -1,5 +1,5 @@
 <template>
-<div>
+  <div>
     <div class="row">
       <b-row class="mt-4">
         <b-img thumbnail fluid :src="photoUrl" style="object-fit: cover; width : 64px; height : 64px; padding : 2px"></b-img>
@@ -13,7 +13,8 @@
             <b-input-group class="mb-4">
               <b-form-input aria-label="titre" v-model="titreNouvelArticle" placeholder="Titre de l'article (max 250 caratères)" maxlength="250"></b-form-input>
             </b-input-group>
-            <b-form-textarea id="textarea" class="mb-4" v-model="textNouvelArticle" placeholder="Text de l'article ... max 500 caratères" rows="3" max-rows="6" maxlength="500"></b-form-textarea>
+            <b-form-textarea id="textarea" class="mb-4" v-model="textNouvelArticle" placeholder="Text de l'article ... max 500 caratères" rows="3"
+             max-rows="6" maxlength="500"></b-form-textarea>
             <b-input-group class="mb-4">
               <b-form-input aria-label="media" id="media" v-model="mediaNouvelArticle" placeholder="url média"></b-form-input>
             </b-input-group>
@@ -26,14 +27,14 @@
         </b-input-group>
       </div>
     </div>
-  <div class="row">
-   <div class="col-md-4 mx-auto">
-     <img alt="groupomania logo" src="../assets/icon-left-font.svg">
-   </div>
- </div>
-<topic-component v-for="(topic,topicIndex) in tableauTopicsFilter" :key="topic.id" v-model="tableauTopicsFilter[topicIndex]"
- @article-suppr="supprArticle"  @modification-affichage="modifAffichage" class="mb-5" :isAdmin="isAdmin"></topic-component>
-</div>
+    <div class="row">
+      <div class="col-md-4 mx-auto">
+        <img alt="groupomania logo" src="../assets/icon-left-font.svg">
+      </div>
+    </div>
+    <topic-component v-for="(topic,topicIndex) in tableauTopicsFilter" :key="topic.id" v-model="tableauTopicsFilter[topicIndex]"
+    @article-suppr="supprArticle"  @modification-affichage="modifAffichage" class="mb-5" :isAdmin="isAdmin"></topic-component>
+  </div>
 </template>
 
 <script>
@@ -43,6 +44,7 @@ export default {
   name : 'DashBoardView',
   data(){
     return {
+
       photoUrl : "",
       recherche : "",
       titreNouvelArticle : "",
@@ -50,6 +52,7 @@ export default {
       mediaNouvelArticle: "",
       tableauTopics : [],
       isAdmin : false
+
     }
   },
   components: {
@@ -64,18 +67,22 @@ export default {
     }
   },
   methods : {
+    // lors du click sur le bouton modifier profil
     modifProfil(){
       var newUlr = document.location.href.replace('dashboard','signup');
       document.location.href = newUlr;
     },
+    // lors du click sur le bouton deconnexion
     deconnexion(){
       localStorage.clear();
       var newUlr = document.location.href.replace('dashboard','');
       document.location.href = newUlr;
     },
+    //mise a jour de l'affichages des post si ajout, modif ou suppression de posts ou commentaire
     modifAffichage(){
       this.recupererArticles();
     },
+    //methode appelant l'api pour créer un post
     creationArticle(){
       var that = this; 
       var recupToken = JSON.parse(localStorage.getItem('token'));
@@ -98,6 +105,7 @@ export default {
         alert(err)
       })
     },
+    //methode appelant l'api pour reccuperer l'enssemble des posts et des commentaires pour affichage
     recupererArticles(){
       var that = this
       var recupToken = JSON.parse(localStorage.getItem('token'));
@@ -116,28 +124,24 @@ export default {
       alert(err)
       })
     },
+    //affichage des message ou erreur lors de la suppression d'un article (voir Topic.vue L.143) et suppression dans le tableau d'affichage
     supprArticle(articleId, message,isErr){
       if(isErr){
         alert(message);
       }else{
         var index = this.tableauTopics.findIndex(t => t.topicId == articleId);
         this.tableauTopics.splice(index,1);
-        this.$bvToast.toast(message, {
-        title: `Suppression`,
-        toaster: 'b-toaster-top-right',
-        solid: true,
-        appendToast: false,
-        variant : 'Danger',
-        noAutoHide:true
-      });
+        alert(message);
       }
     }
   },
   mounted: function() {
-  var that = this;
-  var recupToken = JSON.parse(localStorage.getItem('token'));
-  fetch("http://localhost:3000/api/auth/getsignup", { method: "POST", headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify({token: recupToken})})
+    // recupération de la photo de profil de l'utilisateur connecté
+    var that = this;
+    var recupToken = JSON.parse(localStorage.getItem('token'));
+    fetch("http://localhost:3000/api/auth/getsignup", { method: "POST", headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({token: recupToken})
+    })
     .then (function(res){
         return  res.json();      
     })
@@ -149,13 +153,12 @@ export default {
     .catch(function(err){
       alert(err)
     })
-  this.isAdmin = JSON.parse(localStorage.getItem('admin'));
-  this.recupererArticles();
-  setInterval(function(){ 
-    that.recupererArticles()}, 5000);
+
+    
+    this.isAdmin = JSON.parse(localStorage.getItem('admin'));
+    this.recupererArticles();
+    //actualistaion de l'affichage toutes les 5s
+    setInterval(function(){that.recupererArticles()}, 5000);
   }
 }
 </script>
-
-<style>
-</style>
