@@ -1,4 +1,4 @@
 .env
 /node_modules
-images/*!icon.png
+images/*
 !images/icon.png
