@@ -8,12 +8,9 @@ var fs = require('fs');
 
 const baseDeDonnees = mysql.createConnection({host: process.env.MYSQL_HOST, user: process.env.MYSQL_USER, password: process.env.MYSQL_PASSWORD, database : "groupamania"});
 
-baseDeDonnees.connect(function(err) {
-  if (err) throw err ;
-  console.log("Connecté à la base de données MySQL!");
-});
+baseDeDonnees.connect(function(err) {if (err) throw err ; console.log("Connecté à la base de données MySQL!");});
 
-//fonction permettant la recuperation des informations pour la modification du profil
+//fonction permettant la recuperation des informations pour la modification du profile
 exports.getSignup = (req, res, next) => {
   var decodedToken = jwt.verify(req.body.token, process.env.TOKEN_JWT);
   var id = decodedToken.id;
@@ -22,15 +19,13 @@ exports.getSignup = (req, res, next) => {
     if (!user || user.length === 0) {
       return res.status(401).json({ err: 'Utilisateur non trouvé !',profil: "" });
     }
-    res.status(200).json({
-      err : "",
-      profil : user[0]
-      })
-});
+    res.status(200).json({err : "", profil : user[0]})
+  });
 }
+
 //fonction permettant la création d'un compte
 exports.signup = (req, res, next) => {
-  //vérification de la bonne comformité de l'email grace a une regex
+  //vérification de la bonne comformité de l'email grace à une regex
   if(!/^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/.test(req.body.email)){
     return res.status(400).json({ message : 'Email non correct'});
   };
@@ -71,17 +66,17 @@ exports.signup = (req, res, next) => {
     }else{
       baseDeDonnees.query("INSERT INTO `utilisateurs`(`nom`, `prenom`, `pseudo`, `password`, `email`, `photo_url`) VALUES (?,?,?,?,?,?)",
       [user.nom, user.prenom, user.pseudo, user.password, user.email, user.photo_url], function (err, user) {
-      if(err){
-        //gestion de l'erreur de l'email ou pseudo non unique
-        if (err.errno == 1062){
-          var cibleErreur = err.sqlMessage.split('utilisateurs.')[1].split(`'`)[0];
-          res.status(401).json({ message: `${cibleErreur} déjà existant !` });
+        if(err){
+          //gestion de l'erreur de l'email ou pseudo non unique
+          if (err.errno == 1062){
+            var cibleErreur = err.sqlMessage.split('utilisateurs.')[1].split(`'`)[0];
+            res.status(401).json({ message: `${cibleErreur} déjà existant !` });
+          }else{
+            throw err
+          }
         }else{
-          throw err
+          res.status(201).json({ message: 'Utilisateur créé !' })
         }
-      }else{
-        res.status(201).json({ message: 'Utilisateur créé !' })
-      }
       });
     }
   })
@@ -93,12 +88,12 @@ exports.deleteUser = (req, res, next) => {
   const token = req.body.token;
   const decodedToken = jwt.verify(token, process.env.TOKEN_JWT);
   const userId = decodedToken.id;
-    if(!userId){
-      res.status(403).json({message: 'Utilisateur non autorisé' , isErr: true});
-    }else{
-      baseDeDonnees.query("SELECT `photo_url` FROM `utilisateurs` WHERE `id`=?"
-      ,[userId], function (err, photoUrl) {
-        if(err) throw err;
+  if(!userId){
+    res.status(403).json({message: 'Utilisateur non autorisé' , isErr: true});
+  }else{
+    baseDeDonnees.query("SELECT `photo_url` FROM `utilisateurs` WHERE `id`=?"
+    ,[userId], function (err, photoUrl) {
+      if(err) throw err;
 
       baseDeDonnees.query("DELETE FROM `utilisateurs` WHERE `id`=?"
       ,[userId], function (err, result) {
@@ -106,10 +101,10 @@ exports.deleteUser = (req, res, next) => {
         if(photoUrl[0].photo_url !== "http://localhost:3000/images/icon.png"){
           fs.unlinkSync(photoUrl[0].photo_url.split('http://localhost:3000/')[1]);
         }
-        });
-        res.status(200).json({ message: 'utilisateur supprimé !' , isErr: false});
       });
-    }  
+      res.status(200).json({ message: 'utilisateur supprimé !' , isErr: false});
+    });
+  }  
 };
 
 //fonction permettant l'identification d'un utilisateur
@@ -120,17 +115,16 @@ exports.login = (req, res, next) => {
       return res.status(401).json({ err: 'Utilisateur non trouvé !',token: "", admin : false});
     }
     bcrypt.compare(req.body.mdp, user[0].password)
-        .then(valid => {
-          if (!valid) {
-            return res.status(401).json({ err: 'Mot de passe incorrect !',token: "", admin : false});
-          }
-          res.status(200).json({
-          //création du token d'authentification
-            err : "",
-            token: jwt.sign({ id: user[0].id}, process.env.TOKEN_JWT, { expiresIn: '24h' }),
-            admin: user[0].admin
-            })
-        });
-    
+    .then(valid => {
+      if (!valid) {
+        return res.status(401).json({ err: 'Mot de passe incorrect !',token: "", admin : false});
+      }
+      //création du token d'authentification
+      res.status(200).json({
+      err : "",
+      token: jwt.sign({ id: user[0].id}, process.env.TOKEN_JWT, { expiresIn: '24h' }),
+      admin: user[0].admin
+      })
+    });  
   });
 };
