@@ -35,8 +35,8 @@
                 </template>
                 <h4 class="mt-0">{{ topic.titre }}</h4>
                 <p>{{ topic.article }}</p>
-                <div class="embed-responsive embed-responsive-16by9" v-if="topic.media_url != '' && topic.media_url != null">
-                    <iframe class="embed-responsive-item" :src="topic.media_url" allowfullscreen></iframe>
+                <div class="embed-responsive embed-responsive-16by9 mb-4 ms-3" v-if="topic.media_url != '' && topic.media_url != null">
+                    <a :href="topic.media_url" target="_blank" class="embed-responsive-item">{{ topic.media_url }}</a>
                 </div>
                 <div v-for="comment in topic.myComments" :key="comment.commentId" >
                     <b-media>
