@@ -1,6 +1,7 @@
 //appel des plugins pour le bon fonctionnement du controlleur
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
+var fs = require('fs');
 
 const baseDeDonnees = mysql.createConnection({host: process.env.MYSQL_HOST, user: process.env.MYSQL_USER, password: process.env.MYSQL_PASSWORD, database : "groupamania"});
 
@@ -9,9 +10,14 @@ exports.createPost = (req, res, next) => {
   let token = req.body.token;
   let decodedToken = jwt.verify(token, process.env.TOKEN_JWT);
   let userId = decodedToken.id;
+  if(req.file.filename !== "no file needed"){
+    var mediaUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+  }else{
+    var mediaUrl = req.body.photo_url;
+  }
   if(userId){
     baseDeDonnees.query("INSERT INTO `topics`(`titre`, `article`, `media_url`, `utilisateur_id`, `date_creation`, `date_dernier_com`) VALUES (?,?,?,?,NOW(),NOW())",
-    [req.body.titre, req.body.text, req.body.media_url, userId], function (err, result) {
+    [req.body.titre, req.body.text, mediaUrl, userId], function (err, result) {
       if(err) throw err;
       res.status(201).json({ message: 'Article crée !' , isErr: false})
     })
@@ -55,15 +61,20 @@ exports.getAllPosts = (req, res, next) => {
 
 //fonction permettant de modifier un post si l'utilisateur est le créateur du post ou un admin
 exports.modifyPost = (req, res, next) => {
+  if(req.file.filename !== "no file needed"){
+    var mediaUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+  }else{
+    var mediaUrl = req.body.photo_url;
+  }
   if(req.auth.adminAuth){
     baseDeDonnees.query("UPDATE `topics` SET `titre`= ?,`article`=?,`media_url`=?, `admin_utilisateur_id`=?,`date_modif_admin`= NOW() WHERE `id` = ?"
-    ,[req.body.titre, req.body.text, req.body.media_url, req.auth.userId, req.body.postId], function (err, result) {
+    ,[req.body.titre, req.body.text, mediaUrl, req.auth.userId, req.body.postId], function (err, result) {
       if(err) throw err;
       res.status(200).json({ message: 'Article modifié par admin!', isErr: false });
     });
   }else{
     baseDeDonnees.query("UPDATE `topics` SET `titre`= ?, `article`=?, `media_url`=?, `date_creation`= NOW() WHERE `id` = ?"
-    ,[req.body.titre, req.body.text, req.body.media_url, req.body.postId], function (err, result) {
+    ,[req.body.titre, req.body.text, mediaUrl, req.body.postId], function (err, result) {
       if(err) throw err;
       res.status(200).json({ message: 'Article modifié !' , isErr: false});
     });  
@@ -72,17 +83,23 @@ exports.modifyPost = (req, res, next) => {
 
 //fonction permettant de supprimer un post si l'utilisateur est le créateur du post ou un admin
 exports.deletePost = (req, res, next) => {
-  if(req.auth.adminAuth){
-    baseDeDonnees.query("DELETE FROM `topics` WHERE `id`=?"
-    ,[req.body.postId], function (err, result) {
+  baseDeDonnees.query("SELECT `media_url` FROM `topics` WHERE `id`=?"
+  ,[req.body.postId], function (err, mediaUrl) {
       if(err) throw err;
-      res.status(200).json({ message: 'Article supprimé par admin !' , isErr: false});
-    });
-  }else{
-    baseDeDonnees.query("DELETE FROM `topics` WHERE `id`=?"
-    ,[req.body.postId], function (err, result) {
-      if(err) throw err;
-      res.status(200).json({ message: 'Article supprimé !' , isErr: false});
-    });
-  }
+    if(req.auth.adminAuth){
+      baseDeDonnees.query("DELETE FROM `topics` WHERE `id`=?"
+      ,[req.body.postId], function (err, result) {
+        if(err) throw err;
+        res.status(200).json({ message: 'Article supprimé par admin !' , isErr: false});
+      });
+    }else{
+      baseDeDonnees.query("DELETE FROM `topics` WHERE `id`=?"
+      ,[req.body.postId], function (err, result) {
+        if(err) throw err;
+        res.status(200).json({ message: 'Article supprimé !' , isErr: false});
+      });
+    }
+    if(mediaUrl[0].media_url !=='' && mediaUrl[0].media_url !==null)
+    fs.unlinkSync(mediaUrl[0].media_url.split('http://localhost:3000/')[1]);
+  })
 };

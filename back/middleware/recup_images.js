@@ -11,25 +11,34 @@ const MIME_TYPES = {
 module.exports = (req, res, next) => {
   try {
     //verification que l'on reçois bien uri de l'image
-    if(req.body.photo_url.split('images/')[0] !== "http://localhost:3000/"){
+    if(req.body.photo_url.split('images/')[0] !== "http://localhost:3000/" && req.body.photo_url !== '' && req.body.photo_url !== null){
       var uri = req.body.photo_url; 
       var data = uri.split(',')[1];
       var buf = Buffer.from(data,'base64');
 
       const extension = MIME_TYPES[uri.split(';')[0].split('data:')[1]];
-      var filename = `photo_profil_${req.body.pseudo}.${extension}`;
+      if(req.body.pseudo){
+        var filename = `photo_profil/${req.body.pseudo}.${extension}`;
+      }else{
+        var filename = `photo_posts/${req.body.titre}.${extension}`;
+      }
       req.file = { filename }
       //creation de l'image dans le dossier images du back
       fs.writeFileSync(`./images/${filename}`, buf);
 
       next();
     }else{
-      var filename = "icon.png";
+      if(req.body.pseudo){
+        var filename = "icon.png";
+      }else{
+        var filename = "no file needed"
+      }
       req.file = { filename };
       next();
     }
   
-  } catch {
+  } catch(error){
+    console.error(error);
   res.status(401).json( {message: 'image non chargé' , isErr: true});
   }
 }

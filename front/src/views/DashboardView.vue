@@ -14,10 +14,12 @@
               <b-form-input aria-label="titre" v-model="titreNouvelArticle" placeholder="Titre de l'article (max 250 caratères)" maxlength="250"></b-form-input>
             </b-input-group>
             <b-form-textarea id="textarea" class="mb-4" v-model="textNouvelArticle" placeholder="Text de l'article ... max 500 caratères" rows="3"
-             max-rows="6" maxlength="500"></b-form-textarea>
-            <b-input-group class="mb-4">
-              <b-form-input aria-label="media" id="media" v-model="mediaNouvelArticle" placeholder="url média"></b-form-input>
-            </b-input-group>
+             max-rows="6" maxlength="500">
+            </b-form-textarea>
+            <img alt="" id="media" :src="mediaNouvelArticle" class="d-flex justify-content-center mx-auto mb-4" style="width : 100px; height : 100px; object-fit: cover;">
+            <b-form-group label="" label-cols-sm="2" label-size="sm">
+              <b-form-file id="file-small" size="sm" @change="previewFile"></b-form-file>
+            </b-form-group>
           </b-modal>
         </div>
       </div>
@@ -51,7 +53,8 @@ export default {
       textNouvelArticle : "",
       mediaNouvelArticle: "",
       tableauTopics : [],
-      isAdmin : false
+      isAdmin : false,
+      interval: null
 
     }
   },
@@ -67,6 +70,23 @@ export default {
     }
   },
   methods : {
+    //methode permettant la previsualisation de la photo du post
+    previewFile() {
+      var that = this;
+      const preview = document.getElementById('media');
+      const file = document.querySelector('input[type=file]').files[0];
+      const reader = new FileReader();
+
+      reader.addEventListener("load", function () {
+        // on convertit l'image en une chaîne de caractères base64
+        preview.src = reader.result;
+        that.mediaNouvelArticle = preview.src;
+      }, false);
+
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+    },
     // lors du click sur le bouton modifier profil
     modifProfil(){
       var newUlr = document.location.href.replace('dashboard','signup');
@@ -87,7 +107,7 @@ export default {
       var that = this; 
       var recupToken = JSON.parse(localStorage.getItem('token'));
       fetch("http://localhost:3000/api/posts", { method: "POST",headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({titre : this.titreNouvelArticle, text: this.textNouvelArticle, media_url: this.mediaNouvelArticle, token : recupToken})
+      body: JSON.stringify({titre : this.titreNouvelArticle, text: this.textNouvelArticle, photo_url: this.mediaNouvelArticle, token : recupToken})
       })
       .then (function(res){
         if(res.ok){
@@ -99,6 +119,7 @@ export default {
         that.recupererArticles();
         that.titreNouvelArticle = "";
         that.textNouvelArticle = "";
+        that.mediaNouvelArticle = "";
 
       })
       .catch(function(err){
@@ -158,7 +179,10 @@ export default {
     this.isAdmin = JSON.parse(localStorage.getItem('admin'));
     this.recupererArticles();
     //actualistaion de l'affichage toutes les 5s
-    setInterval(function(){that.recupererArticles()}, 5000);
+    this.interval = setInterval(function(){that.recupererArticles()}, 5000);
+  },
+  beforeDestroy: function(){
+    clearInterval(this.interval);
   }
 }
 </script>

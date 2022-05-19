@@ -4,7 +4,7 @@
             <b-media>
                 <template #aside>
                     <b-row>
-                        <b-img thumbnail fluid :src="topic.photo_url" style="object-fit: cover; width : 64px; height : 64px; padding : 2%"></b-img>
+                        <b-img thumbnail fluid :src="topic.photo_url" style="object-fit: cover; width : 64px; height : 64px; padding : 2px"></b-img>
                     </b-row>
                     <h5 class="ms-3">{{ topic.pseudo }}</h5>
                     <p class="ms-5 mt-2"> {{ topic.date_creation.split("T")[0].split('-').join('/') }}</p>
@@ -18,10 +18,13 @@
                                         placeholder="Titre de l'article (max 250 caratères)" maxlength="250"></b-form-input>
                                     </b-input-group>
                                     <b-form-textarea :id="'textarea-modal-modif-' + topic.topicId" class="mb-4" v-model="modifTextArticle" 
-                                    placeholder="Text de l'article ... max 500 caratères" rows="3" max-rows="6" maxlength="500"></b-form-textarea>
-                                    <b-input-group class="mb-4">
-                                        <b-form-input aria-label="media" :id="'media-modal-modif-' + topic.topicId" v-model="modifMediaArticle" placeholder="url média"></b-form-input>
-                                    </b-input-group>
+                                    placeholder="Text de l'article ... max 500 caratères" rows="3" max-rows="6" maxlength="500">
+                                    </b-form-textarea>
+                                    <img alt="" :src="modifMediaArticle" class="d-flex justify-content-center mx-auto mb-4" 
+                                    style="width : 100px; height : 100px; object-fit: cover;" :id="'media-modal-modif-' + topic.topicId">
+                                    <b-form-group label="" label-cols-sm="2" label-size="sm">
+                                        <b-form-file id="file-small" size="sm" @change="previewFile"></b-form-file>
+                                    </b-form-group>
                                 </b-modal>
                             </div>
                             <div>
@@ -36,13 +39,13 @@
                 <h4 class="mt-0">{{ topic.titre }}</h4>
                 <p>{{ topic.article }}</p>
                 <div class="embed-responsive embed-responsive-16by9 mb-4 ms-3" v-if="topic.media_url != '' && topic.media_url != null">
-                    <a :href="topic.media_url" target="_blank" class="embed-responsive-item">{{ topic.media_url }}</a>
+                    <b-img thumbnail fluid :src="topic.media_url" style="object-fit: cover; width : 300px; height : 300px; padding : 2px"></b-img>
                 </div>
                 <div v-for="comment in topic.myComments" :key="comment.commentId" >
                     <b-media>
                         <template #aside>
                             <b-row class="ms-5">
-                                <b-img thumbnail fluid :src="comment.photo_url" style="object-fit: cover; width : 32px; height : 32px; padding : 2%"></b-img>
+                                <b-img thumbnail fluid :src="comment.photo_url" style="object-fit: cover; width : 32px; height : 32px; padding : 2px"></b-img>
                             </b-row>
                             <h6 class="mt-0 ms-3">{{comment.pseudo}}</h6>
                         </template>
@@ -112,7 +115,7 @@ export default {
             var recupToken = JSON.parse(localStorage.getItem('token'));
             fetch("http://localhost:3000/api/posts", { method: "PUT",headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({postId : this.topic.topicId ,utilisateur_id: this.topic.utilisateur_id,
-            titre : this.modifTitreArticle, text: this.modifTextArticle, media_url : this.modifMediaArticle, token : recupToken})
+            titre : this.modifTitreArticle, text: this.modifTextArticle, photo_url : this.modifMediaArticle, token : recupToken})
             })
             .then (function(res){
                 return res.json();
@@ -121,13 +124,30 @@ export default {
                 if(!value.isErr){
                     that.topic.titre = that.modifTitreArticle;
                     that.topic.article = that.modifTextArticle;
-                    that.topic.media_url = that.modifMediaArticle;
                 }
                 alert(value.message);
             })
             .catch(function(err){
                 alert(err)
             })
+        },
+        //methode permettant la previsualisation de la photo du post
+        previewFile() {
+            var that = this;
+            
+            const preview = document.getElementById(`media-modal-modif-${this.topic.topicId}`);
+            const file = document.querySelector('input[type=file]').files[0];
+            const reader = new FileReader();
+
+            reader.addEventListener("load", function () {
+                // on convertit l'image en une chaîne de caractères base64
+                preview.src = reader.result;
+                that.modifMediaArticle = preview.src;
+            }, false);
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
         },
         //methode appelant l'api pour supprimer un post
         supprArticle(){
