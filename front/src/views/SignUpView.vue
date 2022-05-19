@@ -42,7 +42,7 @@
       <div class="col-md-3">
         <img alt="photo profil" :src="photoUrl" class="d-flex justify-content-center mx-auto mb-4" style="width : 200px; height : 200px; object-fit: cover;">
         <b-form-group label="" label-cols-sm="2" label-size="sm">
-          <b-form-file id="file-small" size="sm" @change="previewFile"></b-form-file>
+          <b-form-file id="file-small" size="sm" placeholder="" @change="previewFile"></b-form-file>
         </b-form-group>
       </div>
     </div>

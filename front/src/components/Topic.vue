@@ -20,10 +20,10 @@
                                     <b-form-textarea :id="'textarea-modal-modif-' + topic.topicId" class="mb-4" v-model="modifTextArticle" 
                                     placeholder="Text de l'article ... max 500 caratères" rows="3" max-rows="6" maxlength="500">
                                     </b-form-textarea>
-                                    <img alt="" :src="modifMediaArticle" class="d-flex justify-content-center mx-auto mb-4" 
+                                    <img alt="" :src="topic.media_url" class="d-flex justify-content-center mx-auto mb-4" 
                                     style="width : 100px; height : 100px; object-fit: cover;" :id="'media-modal-modif-' + topic.topicId">
                                     <b-form-group label="" label-cols-sm="2" label-size="sm">
-                                        <b-form-file id="file-small" size="sm" @change="previewFile"></b-form-file>
+                                        <b-form-file id="file-small" size="sm" placeholder="" @change="previewFile"></b-form-file>
                                     </b-form-group>
                                 </b-modal>
                             </div>
@@ -122,8 +122,8 @@ export default {
             })
             .then(function(value){
                 if(!value.isErr){
-                    that.topic.titre = that.modifTitreArticle;
-                    that.topic.article = that.modifTextArticle;
+                    that.$emit('modification-affichage');
+                    that.modifMediaArticle = that.topic.media_url;
                 }
                 alert(value.message);
             })

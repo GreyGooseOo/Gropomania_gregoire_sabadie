@@ -29,6 +29,10 @@ exports.signup = (req, res, next) => {
   if(!/^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/.test(req.body.email)){
     return res.status(400).json({ message : 'Email non correct'});
   };
+  //vérification de la bonne comformité du mot de passe grace à une regex
+  if(!/^(?=.{10,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$/.test(req.body.mdp)){
+    return res.status(400).json({ message : 'Mot de passe non correct'});
+  };
   //vérification de la présence de tous les élements
   if(!req.body.mdp || !req.body.nom || !req.body.prenom || !req.body.email || !req.body.pseudo){
     return res.status(400).json({ message : 'Paramètre manquant'});
