@@ -6,7 +6,7 @@ const commentsCtlr = require('../controllers/comments');
 
 //gestion des différentes option d'implantation des commentaires dans l'API
 router.post('/', commentsCtlr.createComment);
-router.put('/:id',auth, commentsCtlr.modifyComment);
+router.put('/:id', auth, commentsCtlr.modifyComment);
 router.delete('/delete/:id', auth, commentsCtlr.deleteComment);
 
 
