@@ -11,12 +11,12 @@
       </div>
       <div class="col-md-12 d-flex justify-content-around mt-5">
         <router-link to="/signup"
-          ><b-button class="bouton col" variant="outline-primary"
+          ><b-button class="bouton col" variant="outline-danger"
             >Créer un compte</b-button
           ></router-link
         >
         <router-link to="/login"
-          ><b-button variant="outline-primary" class="bouton col"
+          ><b-button variant="outline-danger" class="bouton col"
             >Connexion</b-button
           ></router-link
         >

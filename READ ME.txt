@@ -1,0 +1,15 @@
+--
+Début d'instalation après téléchargement :
+
+Ouvrir le code dans VScode(ou votre logiciel d'éditeur de code), effectuez un "npm install" dans la console pour le dossier back ainsi que pour le dossier front.
+
+--
+Instalation de la base de donnée :
+
+Installez "php my admin" et créez une base de donnée MySQL, une fois effectué, importez dans la base de donnée le fichier d'initialisation de la base de donnée : "Sabadie_Grégoire_1_bdd_052022".
+
+--
+Lancement du serveur back et du front :
+
+Sur VScode (ou votre logiciel d'éditeur de code) dans la console pour le dossier back executez la commande :"nodemon server"(ou "node server")
+Sur VScode (ou votre logiciel d'éditeur de code) dans la console pour le dossier front executez la commande : "npm run serve"
