@@ -13,3 +13,7 @@ Lancement du serveur back et du front :
 
 Sur VScode (ou votre logiciel d'éditeur de code) dans la console pour le dossier back executez la commande :"nodemon server"(ou "node server")
 Sur VScode (ou votre logiciel d'éditeur de code) dans la console pour le dossier front executez la commande : "npm run serve"
+
+Compte administrateur deja implanté :
+Log : admin
+mdp : Gregoire12
