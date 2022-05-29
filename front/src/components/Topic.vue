@@ -9,6 +9,7 @@
               fluid
               :src="topic.photo_url"
               style="object-fit: cover; width: 64px; height: 64px; padding: 2px"
+              alt="Photo profil compte"
             ></b-img>
           </b-row>
           <h5 class="ms-3">{{ topic.pseudo }}</h5>
@@ -95,6 +96,7 @@
             fluid
             :src="topic.media_url"
             style="object-fit: cover; width: 300px; height: 300px; padding: 2px"
+            :alt="'Photo de post n°' + topic.topicId"
           ></b-img>
         </div>
         <div v-for="comment in topic.myComments" :key="comment.commentId">
@@ -111,6 +113,7 @@
                     height: 32px;
                     padding: 2px;
                   "
+                  alt="photo profil commentaire"
                 ></b-img>
               </b-row>
               <h6 class="mt-0 ms-3">{{ comment.pseudo }}</h6>
@@ -187,6 +190,7 @@
               size="sm"
               text="Button"
               variant="outline-primary"
+              class="bouton"
               @click="creationCommentaire"
               >Commentez</b-button
             >
@@ -407,3 +411,15 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.bouton {
+  color: #cd2704;
+  border-color: #cd2704;
+  background-color: white;
+}
+.bouton:hover {
+  color: white;
+  border-color: #cd2704;
+  background-color: #cd2704;
+}
+</style>

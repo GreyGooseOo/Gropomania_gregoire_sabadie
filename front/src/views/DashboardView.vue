@@ -7,24 +7,25 @@
           fluid
           :src="photoUrl"
           style="object-fit: cover; width: 64px; height: 64px; padding: 2px"
+          alt="Photo profil post"
         ></b-img>
       </b-row>
       <div class="col-md-12 d-flex justify-content-around mt-3">
         <b-button
           variant="outline-primary"
-          class="col-md-3"
+          class="bouton col-md-3"
           @click="modifProfil"
           >Modifier profil</b-button
         >
         <b-button
           variant="outline-primary"
-          class="col-md-3"
+          class="bouton col-md-3"
           @click="deconnexion"
           >Deconnexion</b-button
         >
         <b-button
           variant="outline-primary"
-          class="col-md-3"
+          class="bouton col-md-3"
           v-b-modal.modal-article
           >Créer un article</b-button
         >
@@ -81,7 +82,7 @@
     </div>
     <div class="row">
       <div class="col-md-4 mx-auto">
-        <img alt="groupomania logo" src="../assets/icon-left-font.svg" />
+        <img alt="groupomania logo" src="../assets/icon-above-font.svg" />
       </div>
     </div>
     <topic-component
@@ -262,3 +263,15 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.bouton {
+  color: #cd2704;
+  border-color: #cd2704;
+  background-color: white;
+}
+.bouton:hover {
+  color: white;
+  border-color: #cd2704;
+  background-color: #cd2704;
+}
+</style>

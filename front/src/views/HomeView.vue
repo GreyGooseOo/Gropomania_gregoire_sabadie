@@ -11,12 +11,14 @@
       </div>
       <div class="col-md-12 d-flex justify-content-around mt-5">
         <router-link to="/signup"
-          ><b-button variant="outline-primary"
+          ><b-button class="bouton col" variant="outline-primary"
             >Créer un compte</b-button
           ></router-link
         >
         <router-link to="/login"
-          ><b-button variant="outline-primary">Connexion</b-button></router-link
+          ><b-button variant="outline-primary" class="bouton col"
+            >Connexion</b-button
+          ></router-link
         >
       </div>
     </div>
@@ -34,5 +36,15 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+.bouton {
+  color: #cd2704;
+  border-color: #cd2704;
+  background-color: white;
+}
+.bouton:hover {
+  color: white;
+  border-color: #cd2704;
+  background-color: #cd2704;
+}
 </style>

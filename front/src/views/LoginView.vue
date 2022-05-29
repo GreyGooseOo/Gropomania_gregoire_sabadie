@@ -3,7 +3,7 @@
     <div class="row">
       <b-button
         variant="outline-primary"
-        class="col-md-1 mx-auto"
+        class="bouton col-md-1 mx-auto"
         @click="retourHome"
         >Retour</b-button
       >
@@ -39,11 +39,18 @@
         >
         <b-button
           variant="outline-primary"
-          class="d-flex justify-content-center mx-auto"
+          class="bouton d-flex justify-content-center mx-auto"
           @click="goToSignup"
           >Créer un compte</b-button
         >
       </div>
+    </div>
+    <div class="col-md-12 d-flex justify-content-center mt-5">
+      <img
+        alt="Vue logo"
+        class=""
+        src="../assets/icon-left-font-monochrome-black.svg"
+      />
     </div>
   </div>
 </template>
@@ -107,3 +114,15 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.bouton {
+  color: #cd2704;
+  border-color: #cd2704;
+  background-color: white;
+}
+.bouton:hover {
+  color: white;
+  border-color: #cd2704;
+  background-color: #cd2704;
+}
+</style>
